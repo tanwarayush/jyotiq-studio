@@ -1,0 +1,48 @@
+# AshuAnimates Mahabharata 10-reel series — progress
+
+Branch: `ashuanimates/mahabharata-10`. Series overrides from the brief apply: no approval gates, no Jyotiq branding, end card `महाभारत · भाग N/10` + next teaser + `Follow @ashuanimates`, no Vertex/Veo/Gemini spend, renders never committed.
+
+## Machine/setup log — 2026-11-26 04:20 IST
+- Repo cloned to `/Users/ayushrajput/Documents/Codex/2026-09-11/act-as-a-senior-brand-identity/outputs/jyotiq-studio` from `tanwarayush/jyotiq-studio`.
+- `setup.sh` was Ubuntu-only; patched for macOS and run successfully. It now skips system apt on Darwin, uses existing `whisper-cli`/ffmpeg/node 24, reuses an existing Python/earshot venv when present, and does not overwrite existing Mac symlinks/directories.
+- `video/node_modules` in this clone is a local ignored symlink to the already installed studio `~/.kiro/crew/workspace/video/node_modules` because the package.json hash is identical and disk is nearly full. Do not commit it.
+- Disk at start: about 1.1 GB free. Keep one reel of intermediates at a time; release/upload then delete intermediates.
+- `ELEVENLABS_API_KEY` is set. `HF_TOKEN` is missing. `GCP_SA_KEY_JSON` is absent; no paid image/video generation.
+- `whisper-cli` exists and the large-v3-turbo-q5_0 model exists at `~/.cache/whisper-models/ggml-large-v3-turbo-q5_0.bin`.
+- Important: a prior/concurrent local studio build exists in `~/.kiro/crew/workspace` and was actively rendering `AshuanimatesBarbarik` when this repo was cloned. Do not run a second Remotion/whisper/heavy ffmpeg job while that render is active. Its output can be used as a draft/reference after QA, but canonical source must be committed here.
+
+## Reference/study status
+- Attached reference video: 58.943 s, 576x1248 screen recording with Instagram UI, h264+aac. Frames extracted every 0.5 s into ignored `episodes/ashu-mahabharata/frames/reference/`; contact sheets in same ignored folder.
+- Reference notes: `style/REFERENCE_NOTES.md` (to keep updated).
+- Existing-studio contact sheets made in ignored `frames/study/` from Bharata special, Ep5, Ep6 and Ep7.
+- Gap notes: `LOOK_GAP.md` (drafted; update after viewing final reel 1).
+
+## Reel status
+| reel | title | status | notes |
+|---|---|---|---|
+| 01 | बर्बरीक: एक पल का योद्धा | in progress | Prior local studio source copied into `video/src/Ashuanimates/barbarik/`; active local render was 90/2373 frames at 04:10. Audio exists locally: 18 one-take VO segments, `vo.wav` 77.15 s, mix 79.10 s, loudness about -14.56 LUFS / TP -2.58. Source is a good baseline but visual quality must be checked against reference and probably upgraded. |
+| 02 | कर्ण: जिसने अपनी मौत दान कर दी | not started | exact script in BRIEF.md |
+| 03 | एकलव्य: वो अंगूठा जो इतिहास बन गया | not started | exact script in BRIEF.md |
+| 04 | शकुनि: पासे जो बदला थे | not started | exact script in BRIEF.md |
+| 05 | अभिमन्यु: चक्रव्यूह का अकेला योद्धा | not started | exact script in BRIEF.md |
+| 06 | द्रौपदी: वो साड़ी जो ख़त्म नहीं हुई | not started | exact script in BRIEF.md |
+| 07 | यक्ष प्रश्न: दुनिया का सबसे बड़ा आश्चर्य | not started | exact script in BRIEF.md |
+| 08 | भीष्म: बाणों की शय्या | not started | exact script in BRIEF.md |
+| 09 | अश्वत्थामा: जो आज भी ज़िंदा है | not started | exact script in BRIEF.md |
+| 10 | विश्वरूप: जब कृष्ण ने अपना असली रूप दिखाया | not started | exact script in BRIEF.md |
+
+## Voice decisions so far
+- Prior local reel-1 batch used Kaal narrator `sOZQ1ppVsWN9p0pWlPgY`, Krishna `ovcrTRBELQPup0RNagdO` (Pranit), Barbarik `PnaKthDVqB7PvUN6iU48` (Neel), model `eleven_v3`, settings stability 0.45 / similarity 0.8 / style 0.3 / speaker boost on.
+- Need verify names/pronunciation with earshot + transcripts before locking this as series narrator. Likely keep Kaal for all 10 unless QA fails.
+
+## Immediate next steps
+1. Wait for the active local reel-1 render to finish; do not start another heavy job.
+2. Inspect draft MP4 frames and audio with earshot. Decide whether to use it as v1 or fix visual/audio issues and re-render once.
+3. Copy required reel-1 assets into canonical output paths, write SCRIPT.md/BOARD.md/CAPTION.md/REPORT.md, commit source/docs, create GitHub release `ashu-mahabharata-reel01-v1`.
+4. Refactor/reuse the Barbarik code into the requested shared kit at `video/src/Ashu/mahabharata/kit/` before reel 2; keep old Bharata files read-only.
+5. Build reels 2-10 sequentially using exact scripts in `BRIEF.md`.
+
+## Decisions
+- The exact full production brief is copied to `episodes/ashu-mahabharata/BRIEF.md` so it survives session restarts/context compaction.
+- Because the original Mac studio already exists at `~/.kiro/crew/workspace`, setup does not replace it. This clone is the canonical git/PR copy; the original studio may be used read-only or as a render accelerator when it already contains dependencies/work.
+- In case of conflict, Part 0 studio override wins over Part K: final MP4s/covers are release assets, not git commits.
