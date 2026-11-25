@@ -16,3 +16,8 @@ This file will grow as each reel is built. The shared implementation lives in `v
 - Faces: almond eyes with glint, strong brows, nose bridge/nostril, lip shadow, cheek shading, warm/cool rim depending on scene.
 - Costumes: at least one gradient, one shadow fold, one trim/ornament layer.
 - Characters must read at phone size first; detail should enrich close-ups without creating noise.
+
+## Reel 2 additions
+- Karna: warm bronze skin, black warrior topknot, golden chest-fused kavach with sun disk and large gold kundal, cream dhoti; without armour the same face and costume but bare-chested under a simple cloth wrap, still dignified.
+- Indra: crowned golden-brown deva, white-gold garments, firm eyes; in clouds he is large, luminous and dignified, never horror-like.
+- Surya: a huge warm sun-face/mandala in the sky, symbolic and serene rather than a literal human close-up.
