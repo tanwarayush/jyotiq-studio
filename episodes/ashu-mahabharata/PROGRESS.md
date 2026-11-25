@@ -20,7 +20,7 @@ Branch: `ashuanimates/mahabharata-10`. Series overrides from the brief apply: no
 ## Reel status
 | reel | title | status | notes |
 |---|---|---|---|
-| 01 | बर्बरीक: एक पल का योद्धा | in progress | Prior local studio source copied into `video/src/Ashuanimates/barbarik/`; active local render was 90/2373 frames at 04:10. Audio exists locally: 18 one-take VO segments, `vo.wav` 77.15 s, mix 79.10 s, loudness about -14.56 LUFS / TP -2.58. Source is a good baseline but visual quality must be checked against reference and probably upgraded. |
+| 01 | बर्बरीक: एक पल का योद्धा | in progress | Draft local render completed: 79.146 s, 1080x1920, 30 fps, H.264 yuv420p + AAC 320k/48k, 62 MB. Draft contact-sheet QA failed the quality bar because the front-facing figures read too childlike/clip-art. Shared kit created at `video/src/Ashu/mahabharata/kit/`; captions now chunk to 2–5 words; detailed Bharata-style profile busts are being integrated for Barbarik, Krishna, Bhishma and Drona before the final render. |
 | 02 | कर्ण: जिसने अपनी मौत दान कर दी | not started | exact script in BRIEF.md |
 | 03 | एकलव्य: वो अंगूठा जो इतिहास बन गया | not started | exact script in BRIEF.md |
 | 04 | शकुनि: पासे जो बदला थे | not started | exact script in BRIEF.md |
@@ -44,5 +44,21 @@ Branch: `ashuanimates/mahabharata-10`. Series overrides from the brief apply: no
 
 ## Decisions
 - The exact full production brief is copied to `episodes/ashu-mahabharata/BRIEF.md` so it survives session restarts/context compaction.
+- Duration decision: Part A allows 60–80 s per reel. Reel 1 at 79.10 s is inside the approved range; do not compress it to 58 s. The exact script is 178 words and the narration should remain weighty.
 - Because the original Mac studio already exists at `~/.kiro/crew/workspace`, setup does not replace it. This clone is the canonical git/PR copy; the original studio may be used read-only or as a render accelerator when it already contains dependencies/work.
 - In case of conflict, Part 0 studio override wins over Part K: final MP4s/covers are release assets, not git commits.
+
+## Reel 1 implementation checkpoint — 2026-11-26 04:36 IST
+- PR opened: https://github.com/tanwarayush/jyotiq-studio/pull/1 (draft, series branch).
+- Shared kit exists at `video/src/Ashu/mahabharata/kit/`:
+  - `kit.tsx`: palette/gradients/fonts/camera/grain/motes/dot armies.
+  - `world.tsx`: battlefield, camp, memory home, scale void, hilltop battle, shrine.
+  - `cast.tsx`: original full-body Barbarik/Krishna/elders/mother/shrine-head/scale/props, now with gradient cloth/skin and improved eyes/faces.
+  - `bust.tsx`: copied/upgraded Bharata-special profile bust system; series LOOKS added for `barbarik`, `krishna`, `krishnaBrahmin`; `warriorKnot` hair added; Krishna crown gets peacock feather; `RaisedPalm` hand prop added.
+  - `captions.tsx`: reusable exact-word caption engine (2–5 word chunks, current word highlight), hook title and series end card.
+- `video/src/Ashuanimates/barbarik/` now contains only Episode/scenes/timing; shared art is imported from the kit.
+- Key reel-1 closeups now use profile busts: Barbarik reveal, Krishna question, Bhishma/Drona answers, `एक पल`, brahmin Krishna/Barbarik ask. This fixes the draft's biggest quality failure.
+- Frame checks already inspected: detailed bust sheet looked substantially better; hook frame is lit with exact text from frame 0; end card exists but may need spacing polish.
+- Missing `video/public/jyotiq/testimonial/captions.json` was copied from the existing Mac studio because Root.tsx otherwise cannot bundle. It is a 3.9 KB metadata file, not media.
+- Typecheck command used: `cd video && npx tsc --noEmit --pretty false | grep -E 'Ashu/mahabharata|Ashuanimates'`; no series errors so far. Full `npm run lint` still fails on pre-existing unrelated old episodes (Board6 unused Sword, ep7 unused f, manthan ep6 unused imports, missing testimonial JSON before copy etc.). Do not edit those old episodes.
+- Draft render was only a baseline. Final canonical render must be made from THIS clone after the bust/caption/end-card upgrades.

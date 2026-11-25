@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Audio, staticFile, useCurrentFrame } from "remotion";
-import { Defs, H, MUKTA, PaperGrain, ROZHA, Vignette, W, outBack, outCubic, prog } from "./kit";
+import { Defs, H, PaperGrain, ROZHA, Vignette, W, outCubic, prog } from "../../Ashu/mahabharata/kit/kit";
+import { CaptionTrack, HookTitle, SeriesEndCard } from "../../Ashu/mahabharata/kit/captions";
 import { PHRASES, WORDS } from "./timing";
 import {
   ArrowClose,
@@ -27,8 +28,8 @@ import {
   WatchBattle,
   WishWatch,
 } from "./scenes";
-import { Barbarik, ThreeArrows } from "./cast";
-import { Battlefield } from "./world";
+import { Barbarik, ThreeArrows } from "../../Ashu/mahabharata/kit/cast";
+import { Battlefield } from "../../Ashu/mahabharata/kit/world";
 
 type Shot = { a: number; b: number; render: (f: number, a: number, b: number) => React.ReactNode };
 
@@ -82,101 +83,6 @@ const Speaker: Record<string, string> = {
   barbarik: "बर्बरीक",
 };
 
-const Caption: React.FC<{ f: number }> = ({ f }) => {
-  let pi = -1;
-  for (let i = 0; i < PHRASES.length; i++) {
-    const ph = PHRASES[i];
-    const next = PHRASES[i + 1];
-    const end = Math.min(next ? next.a - 2 : 1e9, ph.b + 18);
-    if (f >= ph.a - 2 && f < end) pi = i;
-  }
-  if (pi < 0) return null;
-  const ph = PHRASES[pi];
-  const ws = WORDS.filter((w) => w.p === pi);
-  const pop = prog(f, ph.a - 2, ph.a + 5, outBack);
-  const nextA = PHRASES[pi + 1] ? PHRASES[pi + 1].a - 2 : 1e9;
-  const fadeOut = ph.code === "14a" ? 1 - prog(f, ph.b + 1, ph.b + 11, outCubic) : 1 - prog(f, Math.min(ph.b + 11, nextA - 4), Math.min(ph.b + 18, nextA), outCubic);
-  const who = Speaker[ph.who];
-  return (
-    <div style={{ position: "absolute", left: 42, right: 172, top: 1325, height: 270, display: "flex", alignItems: "flex-end", justifyContent: "center", pointerEvents: "none" }}>
-      <div
-        style={{
-          maxWidth: 830,
-          textAlign: "center",
-          fontFamily: MUKTA,
-          fontWeight: 800,
-          fontSize: ph.who === "narrator" ? 52 : 56,
-          lineHeight: 1.24,
-          color: "#FFFFFF",
-          textShadow: "0 4px 10px rgba(0,0,0,0.8), 0 0 22px rgba(0,0,0,0.55)",
-          opacity: Math.min(1, pop * 1.4) * fadeOut,
-          transform: `scale(${0.94 + 0.06 * pop})`,
-          transformOrigin: "50% 100%",
-        }}
-      >
-        {who ? (
-          <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: 0.8, color: ph.who === "krishna" ? "#B9F1FF" : "#FFE083", marginBottom: 4, textShadow: "0 3px 8px rgba(0,0,0,0.85)" }}>
-            {who}
-          </div>
-        ) : null}
-        {ws.map((w, i) => {
-          const cur = f >= w.a - 1 && f < (ws[i + 1] ? ws[i + 1].a - 1 : w.b + 11);
-          const said = f >= w.a - 1;
-          const k = cur ? prog(f, w.a - 1, w.a + 3, outBack) : 0;
-          if (!said) return null;
-          return (
-            <React.Fragment key={`${w.w}-${i}`}>
-              <span
-                style={{
-                  display: "inline-block",
-                  padding: cur ? "0 7px" : "0 1px",
-                  margin: "1px 0",
-                  borderRadius: 12,
-                  background: cur ? "linear-gradient(135deg,#D69B35,#B9542E)" : "transparent",
-                  color: cur ? "#FFF8E8" : "#FFFFFF",
-                  opacity: 1,
-                  transform: `scale(${1 + 0.08 * k})`,
-                  boxShadow: cur ? "0 6px 14px rgba(0,0,0,0.42)" : undefined,
-                }}
-              >
-                {w.w}
-              </span>{" "}
-            </React.Fragment>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-const HookText: React.FC<{ f: number }> = ({ f }) => {
-  const t = prog(f, 2, 14, outBack);
-  const out = 1 - prog(f, 62, 82, outCubic);
-  if (out <= 0) return null;
-  return (
-    <div style={{ position: "absolute", left: 55, right: 175, top: 245, textAlign: "center", opacity: t * out, transform: `scale(${0.9 + 0.1 * t})`, pointerEvents: "none" }}>
-      <div style={{ fontFamily: ROZHA, fontSize: 78, lineHeight: 1.16, color: "#FFF3CF", textShadow: "0 6px 0 rgba(77,28,10,0.75), 0 14px 34px rgba(0,0,0,0.65)" }}>
-        एक पल में<br />महाभारत खत्म?
-      </div>
-    </div>
-  );
-};
-
-const EndText: React.FC<{ f: number }> = ({ f }) => {
-  const t = prog(f, 2314, 2336, outBack);
-  if (t <= 0) return null;
-  return (
-    <div style={{ position: "absolute", left: 55, right: 175, top: 1180, textAlign: "center", opacity: t, transform: `scale(${0.92 + 0.08 * t})`, pointerEvents: "none" }}>
-      <div style={{ fontFamily: ROZHA, fontSize: 92, lineHeight: 1.08, color: "#FFF3CF", textShadow: "0 6px 0 rgba(64,25,9,0.75), 0 16px 36px rgba(0,0,0,0.72)" }}>
-        हारे का सहारा
-      </div>
-      <div style={{ marginTop: 34, fontFamily: MUKTA, fontSize: 31, fontWeight: 700, color: "#FFF7E8", textShadow: "0 4px 12px rgba(0,0,0,0.8)" }}>
-        Follow <span style={{ color: "#FFE083" }}>@ashuanimates</span> for more such kathas
-      </div>
-    </div>
-  );
-};
-
 export const BarbarikEpisode: React.FC<{ audio?: boolean }> = ({ audio = true }) => {
   const f = useCurrentFrame();
   return (
@@ -187,9 +93,9 @@ export const BarbarikEpisode: React.FC<{ audio?: boolean }> = ({ audio = true })
         <PaperGrain o={0.16} />
         <Vignette o={0.48} />
       </svg>
-      <Caption f={f} />
-      <HookText f={f} />
-      <EndText f={f} />
+      <CaptionTrack f={f} phrases={PHRASES} words={WORDS} speakers={Speaker} />
+      <HookTitle f={f} lines={["महाभारत", "1 पल में खत्म?"]} endFrame={82} />
+      <SeriesEndCard f={f} startFrame={2314} part={1} title="हारे का सहारा" nextTitle="कर्ण" />
       {audio ? <Audio src={staticFile("ashuanimates/barbarik/mix.wav")} /> : null}
     </AbsoluteFill>
   );

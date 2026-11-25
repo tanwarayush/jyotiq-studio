@@ -1,9 +1,11 @@
 import React from "react";
-import { Cam, H, Motes, W, lerp, prog } from "./kit";
-import { Barbarik, ElderWarrior, GiantSilhouette, GoldenScale, Krishna, Mother, SereneHead, ShivaGlow, ThreadBlessing, ThreeArrows } from "./cast";
-import { Battlefield, Camp, HilltopBattle, MemoryHome, ScaleVoid, Shrine } from "./world";
+import { Cam, H, Motes, W, lerp, prog } from "../../Ashu/mahabharata/kit/kit";
+import { Barbarik, ElderWarrior, GiantSilhouette, GoldenScale, Krishna, Mother, SereneHead, ShivaGlow, ThreadBlessing, ThreeArrows } from "../../Ashu/mahabharata/kit/cast";
+import { Battlefield, Camp, HilltopBattle, MemoryHome, ScaleVoid, Shrine } from "../../Ashu/mahabharata/kit/world";
+import { Bust, LOOKS, RaisedPalm } from "../../Ashu/mahabharata/kit/bust";
 
 type SP = { f: number; a: number; b: number };
+const blinkF = (f: number, seed: number) => ((f + seed) % 137 < 6 ? 0.12 : 1);
 
 export const HookWide: React.FC<SP> = ({ f, a, b }) => (
   <Cam f={f} a={a} b={b} cx={540} cy={1110} s0={1.02} s1={1.13} dy={-20}>
@@ -52,7 +54,7 @@ export const Reveal: React.FC<SP> = ({ f, a, b }) => (
   <Cam f={f} a={a} b={b} cx={520} cy={1080} s0={1.0} s1={1.15} dy={-25}>
     <Battlefield f={f} armies={0.22} deep />
     <circle cx={530} cy={1090} r={390} fill="#FFBF65" opacity={0.13} filter="url(#bbBlur18)" />
-    <Barbarik f={f} x={520} y={1535} s={1.75} mode="stand" quiver glow={3} seed={13} />
+    <Bust look={LOOKS.barbarik} f={f} x={-30} y={-80} s={0.96} e={{ eye: blinkF(f, 13), smile: 0.28, brow: 0.15 }} />
   </Cam>
 );
 
@@ -100,7 +102,7 @@ export const KrishnaAsk: React.FC<SP> = ({ f, a, b }) => {
     <Cam f={f} a={a} b={b} cx={500} cy={1010} s0={1.05} s1={1.19} dy={-20}>
       <Camp f={f} night />
       <circle cx={710} cy={940} r={170} fill="none" stroke="#9FEAFF" strokeWidth={6} opacity={0.18 * ring} strokeDasharray="20 18" transform={`rotate(${f * 1.5} 710 940)`} />
-      <Krishna f={f} x={500} y={1565} s={2.05} seed={29} raised={0.15} />
+      <Bust look={LOOKS.krishna} f={f} x={-20} y={-95} s={0.98} e={{ eye: blinkF(f, 29), smile: 0.44, brow: -0.05 }} />
     </Cam>
   );
 };
@@ -108,7 +110,7 @@ export const KrishnaAsk: React.FC<SP> = ({ f, a, b }) => {
 export const ElderAnswer: React.FC<SP & { kind: "bhishma" | "drona"; days: string }> = ({ f, a, b, kind, days }) => (
   <Cam f={f} a={a} b={b} cx={520} cy={1040} s0={1.02} s1={1.15} dy={-18}>
     <Camp f={f} night={false} />
-    <ElderWarrior f={f} x={510} y={1530} s={1.9} kind={kind} facing={1} />
+    <Bust look={kind === "bhishma" ? LOOKS.bhishma : LOOKS.drona} f={f} x={-30} y={-90} s={0.96} e={{ eye: blinkF(f, kind === "bhishma" ? 31 : 47), mouth: 0.08, brow: 0.2 }} />
     <g transform="translate(735 1210)">
       <rect x={-120} y={-74} width={240} height={122} rx={26} fill="#120D0A" opacity={0.68} />
       <text x={0} y={18} textAnchor="middle" fontSize={64} fontWeight={800} fill="#FFF2D0" style={{ fontFamily: "Mukta, sans-serif" }}>{days}</text>
@@ -122,8 +124,8 @@ export const EkPal: React.FC<SP & { hit: number }> = ({ f, a, b, hit }) => {
     <Cam f={f} a={a} b={b} cx={510} cy={1020} s0={1.03} s1={1.16} hits={[hit]} amp={10}>
       <Battlefield f={f} deep armies={0.18} />
       <circle cx={510} cy={1070} r={420} fill="#FFCA72" opacity={0.12 + 0.12 * k} filter="url(#bbBlur18)" />
-      <Barbarik f={f} x={510} y={1545} s={2.0} mode="smile" quiver glow={3} seed={37} />
-      <text x={540} y={520} textAnchor="middle" fontSize={150 + 14 * k} fontWeight={400} fill="#FFF2C2" stroke="#3B1C0D" strokeWidth={5} style={{ fontFamily: "Rozha One, serif" }} opacity={0.15 + 0.85 * k}>एक पल।</text>
+      <Bust look={LOOKS.barbarik} f={f} x={-20} y={-75} s={1.0} e={{ eye: blinkF(f, 37), smile: 0.78, brow: 0.05 }} />
+      <text x={540} y={520} textAnchor="middle" fontSize={112 + 10 * k} fontWeight={400} fill="#FFF2C2" stroke="#3B1C0D" strokeWidth={5} style={{ fontFamily: "Rozha One, serif" }} opacity={0.15 + 0.85 * k}>एक पल।</text>
     </Cam>
   );
 };
@@ -181,9 +183,9 @@ export const BrahminApproach: React.FC<SP> = ({ f, a, b }) => {
 export const AskHand: React.FC<SP> = ({ f, a, b }) => (
   <Cam f={f} a={a} b={b} cx={520} cy={1040} s0={1.08} s1={1.2} dy={-18}>
     <Battlefield f={f} deep armies={0.05} />
-    <Krishna f={f} x={370} y={1540} s={1.8} facing={1} brahmin raised={1} palm seed={61} />
+    <Bust look={LOOKS.krishnaBrahmin} f={f} x={-100} y={40} s={0.75} e={{ eye: blinkF(f, 61), smile: 0.32, brow: -0.05 }} hand={<RaisedPalm x={690} y={1030} s={0.82} />} />
     <circle cx={520} cy={1040} r={250} fill="url(#bbBlueGlow)" opacity={0.32} filter="url(#bbBlur18)" />
-    <Barbarik f={f} x={780} y={1535} s={1.15} facing={-1} mode="bow" quiver seed={67} bowing={0.3} />
+    <Bust look={LOOKS.barbarik} f={f} flip x={230} y={-55} s={0.92} e={{ eye: blinkF(f, 67), smile: 0.12, brow: -0.15 }} />
   </Cam>
 );
 

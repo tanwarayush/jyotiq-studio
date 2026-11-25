@@ -90,6 +90,48 @@ export const Defs: React.FC = () => (
       <stop offset="0.45" stopColor="#D99B35" />
       <stop offset="1" stopColor="#8E551B" />
     </linearGradient>
+    <linearGradient id="bbSkinWarm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stopColor="#5E321D" />
+      <stop offset="0.45" stopColor="#875334" />
+      <stop offset="0.82" stopColor="#B8794C" />
+      <stop offset="1" stopColor="#E2A96F" />
+    </linearGradient>
+    <linearGradient id="bbSkinKrishna" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stopColor="#1D3B5C" />
+      <stop offset="0.48" stopColor="#2F638D" />
+      <stop offset="0.86" stopColor="#5D96BA" />
+      <stop offset="1" stopColor="#9BC9DA" />
+    </linearGradient>
+    <linearGradient id="bbClothOrange" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stopColor="#78351D" />
+      <stop offset="0.5" stopColor="#C77335" />
+      <stop offset="1" stopColor="#F0B56C" />
+    </linearGradient>
+    <linearGradient id="bbClothTeal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stopColor="#173548" />
+      <stop offset="0.52" stopColor="#3B6576" />
+      <stop offset="1" stopColor="#77A7AE" />
+    </linearGradient>
+    <linearGradient id="bbRobeGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stopColor="#8E551B" />
+      <stop offset="0.5" stopColor="#E4A92F" />
+      <stop offset="1" stopColor="#FFE08A" />
+    </linearGradient>
+    <linearGradient id="sp-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stopColor="#fff0a8" />
+      <stop offset="0.52" stopColor="#f3c24f" />
+      <stop offset="1" stopColor="#8a5a14" />
+    </linearGradient>
+    <linearGradient id="sp-goldH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stopColor="#8a5a14" />
+      <stop offset="0.5" stopColor="#f3c24f" />
+      <stop offset="1" stopColor="#fff0a8" />
+    </linearGradient>
+    <linearGradient id="ar-white" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stopColor="#bdb6a6" />
+      <stop offset="0.55" stopColor="#f7f1e6" />
+      <stop offset="1" stopColor="#fffdf4" />
+    </linearGradient>
     <linearGradient id="bbFlame" x1="0" y1="1" x2="0" y2="0">
       <stop offset="0" stopColor="#E36B2C" />
       <stop offset="0.5" stopColor="#FFC94F" />

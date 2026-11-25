@@ -1,5 +1,6 @@
 import React from "react";
 import { CloudBand, DotArmy, H, Motes, W, rnd } from "./kit";
+import { SereneHead } from "./cast";
 
 export const Battlefield: React.FC<{
   f: number;
@@ -159,12 +160,15 @@ export const Shrine: React.FC<{ f: number; push?: number }> = ({ f, push = 0 }) 
         <circle cx={0} cy={-110} r={245} fill="#FFCF76" opacity={0.12} filter="url(#bbBlur18)" />
         <path d="M-185 285V-40C-160 -170 -92 -248 0 -248C94 -248 160 -170 185 -40V285Z" fill="#3A2420" stroke="#C88336" strokeWidth={7} />
         <path d="M-132 270V-10C-110 -118 -62 -180 0 -180C64 -180 110 -118 132 -10V270Z" fill="#171116" />
-        <circle cx={0} cy={-55} r={96} fill="#875334" stroke="#FFD39A" strokeWidth={5} />
-        <path d="M-88 -88C-72 -154 -28 -182 16 -176C70 -168 94 -124 88 -76C48 -108 -8 -116 -88 -88Z" fill="#16100B" />
-        <path d="M-30 -38Q-16 -45 -3 -38M8 -38Q22 -45 36 -38" stroke="#21150E" strokeWidth={5.5} fill="none" strokeLinecap="round" />
-        <path d="M-26 24Q0 38 29 24" stroke="#4C1E13" strokeWidth={5} fill="none" strokeLinecap="round" />
+        <SereneHead f={f} x={0} y={-45} s={1.28} glow={0.8} />
         <path d="M-80 92C-30 116 34 116 82 92" stroke="#D89B36" strokeWidth={12} fill="none" opacity={0.85} />
         <path d="M-110 142C-45 176 48 176 110 142" stroke="#C94F38" strokeWidth={13} fill="none" opacity={0.78} />
+        {Array.from({ length: 13 }, (_, i) => {
+          const u = i / 12;
+          const xx = -104 + u * 208;
+          const yy = 143 + Math.sin(u * Math.PI) * 27;
+          return <circle key={i} cx={xx} cy={yy} r={7 + (i % 2)} fill={i % 3 === 0 ? "#FFF1A8" : i % 3 === 1 ? "#E0602F" : "#F2C46D"} opacity={0.9} />;
+        })}
       </g>
       <rect y={1420} width={W} height={500} fill="#211414" />
       <path d="M0 1450C260 1425 520 1462 780 1438C930 1422 1015 1442 1080 1430V1920H0Z" fill="#31201B" />

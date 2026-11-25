@@ -1,0 +1,169 @@
+{
+  "model_id": "eleven_v3",
+  "voice_settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "style": 0.3,
+    "use_speaker_boost": true
+  },
+  "voices": {
+    "narrator": {
+      "id": "sOZQ1ppVsWN9p0pWlPgY",
+      "name": "Kaal - Hindi Epic Saga Narrator"
+    },
+    "krishna": {
+      "id": "ovcrTRBELQPup0RNagdO",
+      "name": "Pranit - Soothing & Devotional Narrator"
+    },
+    "barbarik": {
+      "id": "PnaKthDVqB7PvUN6iU48",
+      "name": "Neel - Deep & Dramatic Mythology Voice"
+    }
+  },
+  "segments": [
+    {
+      "code": "01a",
+      "who": "narrator",
+      "line": 1,
+      "tag": "[hushed, weighty, mysterious]",
+      "spoken": "एक योद्धा था... जो पूरा महाभारत एक पल में खत्म कर सकता था।",
+      "file": "audio/vo/01a_narrator_line01.mp3"
+    },
+    {
+      "code": "02a",
+      "who": "narrator",
+      "line": 2,
+      "tag": "[grave, measured]",
+      "spoken": "पर श्री कृष्ण ने उसे युद्ध से पहले ही रोक दिया।",
+      "file": "audio/vo/02a_narrator_line02.mp3"
+    },
+    {
+      "code": "03a",
+      "who": "narrator",
+      "line": 3,
+      "tag": "[warm, revealing]",
+      "spoken": "नाम था बर्बरीक। घटोत्कच का बेटा... भीम का पोता।",
+      "file": "audio/vo/03a_narrator_line03.mp3"
+    },
+    {
+      "code": "04a",
+      "who": "narrator",
+      "line": 4,
+      "tag": "[awed, measured]",
+      "spoken": "महादेव से उन्हें तीन बाण मिले थे। पहला निशान लगाता... तीसरा सब खत्म कर देता।",
+      "file": "audio/vo/04a_narrator_line04.mp3"
+    },
+    {
+      "code": "05a",
+      "who": "narrator",
+      "line": 5,
+      "tag": "[curious, storyteller]",
+      "spoken": "लोक कथा कहती है, कृष्ण ने हर योद्धा से पूछा —",
+      "file": "audio/vo/05a_narrator_line05.mp3"
+    },
+    {
+      "code": "05b",
+      "who": "krishna",
+      "line": 5,
+      "tag": "[calm, soft, divine, testing]",
+      "spoken": "अकेले लड़ो, तो ये युद्ध कितने दिन में खत्म करोगे?",
+      "file": "audio/vo/05b_krishna_line05.mp3"
+    },
+    {
+      "code": "06a",
+      "who": "narrator",
+      "line": 6,
+      "tag": "[measured, recounting]",
+      "spoken": "भीष्म बोले — बीस दिन। द्रोण बोले — पच्चीस।",
+      "file": "audio/vo/06a_narrator_line06.mp3"
+    },
+    {
+      "code": "07a",
+      "who": "narrator",
+      "line": 7,
+      "tag": "[expectant, hushed]",
+      "spoken": "बर्बरीक मुस्कुराए —",
+      "file": "audio/vo/07a_narrator_line07.mp3"
+    },
+    {
+      "code": "07b",
+      "who": "barbarik",
+      "line": 7,
+      "tag": "[young, firm, quiet confidence]",
+      "spoken": "एक पल।",
+      "file": "audio/vo/07b_barbarik_line07.mp3"
+    },
+    {
+      "code": "08a",
+      "who": "narrator",
+      "line": 8,
+      "tag": "[gentle, solemn]",
+      "spoken": "पर बर्बरीक ने अपनी माँ को एक वचन दिया था — वो हमेशा हारने वाले का साथ देंगे।",
+      "file": "audio/vo/08a_narrator_line08.mp3"
+    },
+    {
+      "code": "09a",
+      "who": "narrator",
+      "line": 9,
+      "tag": "[knowing, grave]",
+      "spoken": "कृष्ण समझ गए। जो सेना हारेगी, बर्बरीक उधर चले जाएँगे। फिर दूसरी हारेगी... तो उधर।",
+      "file": "audio/vo/09a_narrator_line09.mp3"
+    },
+    {
+      "code": "10a",
+      "who": "narrator",
+      "line": 10,
+      "tag": "[slow, ominous, hushed]",
+      "spoken": "और आख़िर में... मैदान में बस एक बचेगा। बर्बरीक ख़ुद।",
+      "file": "audio/vo/10a_narrator_line10.mp3"
+    },
+    {
+      "code": "11a",
+      "who": "narrator",
+      "line": 11,
+      "tag": "[low, mysterious]",
+      "spoken": "तब कृष्ण ब्राह्मण बनकर आए... और दान में माँगा —",
+      "file": "audio/vo/11a_narrator_line11.mp3"
+    },
+    {
+      "code": "11b",
+      "who": "krishna",
+      "line": 11,
+      "tag": "[calm, soft, divine, compassionate]",
+      "spoken": "उनका सिर।",
+      "file": "audio/vo/11b_krishna_line11.mp3"
+    },
+    {
+      "code": "12a",
+      "who": "narrator",
+      "line": 12,
+      "tag": "[heavy, reverent]",
+      "spoken": "बर्बरीक ने बिना एक पल सोचे, अपना सिर दे दिया। बस एक इच्छा रखी —",
+      "file": "audio/vo/12a_narrator_line12.mp3"
+    },
+    {
+      "code": "12b",
+      "who": "barbarik",
+      "line": 12,
+      "tag": "[young, firm, yearning]",
+      "spoken": "मैं ये युद्ध देखना चाहता हूँ।",
+      "file": "audio/vo/12b_barbarik_line12.mp3"
+    },
+    {
+      "code": "13a",
+      "who": "narrator",
+      "line": 13,
+      "tag": "[awed, tender, slow]",
+      "spoken": "कृष्ण ने उनका सिर एक पहाड़ी पर रखा... और वहीं से बर्बरीक ने पूरा महाभारत देखा।",
+      "file": "audio/vo/13a_narrator_line13.mp3"
+    },
+    {
+      "code": "14a",
+      "who": "narrator",
+      "line": 14,
+      "tag": "[warm, devotional, resolved]",
+      "spoken": "आज दुनिया उन्हें खाटू श्याम कहती है... हारे का सहारा।",
+      "file": "audio/vo/14a_narrator_line14.mp3"
+    }
+  ]
+}

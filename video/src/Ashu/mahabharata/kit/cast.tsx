@@ -41,9 +41,11 @@ export const ThreeArrows: React.FC<{ x: number; y: number; s?: number; f?: numbe
 const blinkK = (f: number, seed: number) => ((f + seed) % 137 < 6 ? 0.12 : 1);
 const Eye: React.FC<{ x: number; y: number; k?: number; look?: number; skinLine?: string }> = ({ x, y, k = 1, look = 0, skinLine = ink }) => (
   <g transform={`translate(${x} ${y}) scale(1 ${k})`}>
-    <ellipse cx={0} cy={0} rx={10.5} ry={4.8} fill="#FFF6E8" opacity={0.9} />
-    <circle cx={look * 3} cy={0.4} r={3.15} fill="#1A0D07" />
-    <path d="M-10 -3Q0 -7 10 -3" stroke={skinLine} strokeWidth={2.7} fill="none" opacity={0.82} />
+    <path d="M-11 0Q-5 -6 1 -5.6Q8 -5.4 11 -0.6Q5 5.2 -1 5Q-8 4.6 -11 0Z" fill="#FFF4E4" opacity={0.94} />
+    <circle cx={look * 3 + 1} cy={0.2} r={3.35} fill="#1A0D07" />
+    <circle cx={look * 3 + 2.1} cy={-1} r={1.05} fill="#FFF9EA" opacity={0.9} />
+    <path d="M-11 -0.4Q-4 -6.5 3 -5.4Q8 -4.6 11 -0.8" stroke={skinLine} strokeWidth={2.8} fill="none" strokeLinecap="round" opacity={0.9} />
+    <path d="M-8 3.2Q0 5.7 8 2.7" stroke={skinLine} strokeWidth={1.25} fill="none" opacity={0.35} />
   </g>
 );
 
@@ -63,10 +65,10 @@ export const Barbarik: React.FC<{
   seed?: number;
   bowing?: number;
 }> = ({ f, x, y, s = 1, facing = 1, mode = "stand", silhouette = false, draw = 0, glow = 0, quiver = true, seed = 1, bowing = 0 }) => {
-  const skin = silhouette ? "#17110E" : "#875334";
+  const skin = silhouette ? "#17110E" : "url(#bbSkinWarm)";
   const shade = silhouette ? "#100C0A" : "#633620";
-  const cloth = silhouette ? "#17110E" : "#C77335";
-  const cloth2 = silhouette ? "#100C0A" : "#284F68";
+  const cloth = silhouette ? "#17110E" : "url(#bbClothOrange)";
+  const cloth2 = silhouette ? "#100C0A" : "url(#bbClothTeal)";
   const hair = silhouette ? "#0D0A08" : "#16100B";
   const gold = silhouette ? "#17110E" : "#D6A247";
   const sw = Math.sin(f / 18 + seed) * 4;
@@ -93,9 +95,13 @@ export const Barbarik: React.FC<{
       <g transform={`rotate(${lean} 0 -160)`}>
         <path d="M-44 -142C-62 -96 -58 -42 -40 0H-9L-4 -118Z" fill={shade} />
         <path d="M44 -142C62 -96 58 -42 40 0H9L4 -118Z" fill={shade} />
-        <path d="M-58 -160C-52 -92 -42 -38 -20 0H24C48 -46 58 -102 56 -160C31 -176 -30 -176 -58 -160Z" fill={cloth} stroke={silhouette ? cloth : "#743B1E"} strokeWidth={4} />
+        <path d="M-44 -96C-52 -64 -49 -28 -39 0H-10L-4 -92Z" fill={silhouette ? cloth : "#7B452C"} opacity={0.96} />
+        <path d="M44 -96C52 -64 49 -28 39 0H10L4 -92Z" fill={silhouette ? cloth : "#6C3B25"} opacity={0.96} />
+        <path d="M-58 -160C-52 -98 -44 -55 -25 -34C-8 -22 13 -22 30 -34C47 -58 56 -105 56 -160C31 -176 -30 -176 -58 -160Z" fill={cloth} stroke={silhouette ? cloth : "#743B1E"} strokeWidth={4} />
         <path d={`M-58 -160C-20 -140 18 -138 56 -160L60 -128C24 -104 -24 -106 -62 -128Z`} fill={cloth2} opacity={0.95} />
         <path d={`M-58 -126C-30 -102 10 -96 58 -116L62 -88C28 -66 -18 -70 -62 -92Z`} fill={silhouette ? cloth : "#E0A15C"} opacity={0.72} />
+        <path d={`M-54 -88C-20 -68 18 -68 56 -88L54 -62C20 -44 -18 -46 -56 -66Z`} fill={silhouette ? cloth : "#D6A247"} opacity={0.86} />
+        <path d="M-8 -58C-14 -38 -13 -18 -8 0M13 -58C18 -38 17 -18 11 0" stroke={silhouette ? cloth : "#E7B76E"} strokeWidth={4} opacity={0.42} fill="none" />
         <path d={`M-38 -163C-34 -210 -24 -236 0 -238C25 -236 36 -210 40 -163C18 -150 -16 -150 -38 -163Z`} fill={silhouette ? cloth : "#3B6576"} stroke={silhouette ? cloth : "#1D3D4C"} strokeWidth={4} />
         <path d={`M-20 -238C-18 -254 18 -254 21 -238L16 -218H-15Z`} fill={skin} />
         {archer ? (
@@ -133,6 +139,13 @@ export const Barbarik: React.FC<{
         </g>
         <g transform={`translate(0 -286)`}>
           <ellipse cx={0} cy={0} rx={48} ry={54} fill={skin} stroke={silhouette ? skin : "#4E2816"} strokeWidth={3} />
+          {!silhouette ? (
+            <g>
+              <path d="M-38 -6C-34 22 -20 43 2 49C-22 48 -42 31 -45 4Z" fill="#4A2415" opacity={0.18} />
+              <path d="M29 -39C42 -24 45 5 35 28" stroke="#FFD39A" strokeWidth={4} fill="none" opacity={0.55} strokeLinecap="round" />
+              <path d="M-21 -37Q-4 -45 17 -39" stroke="#2A130B" strokeWidth={3} fill="none" opacity={0.35} />
+            </g>
+          ) : null}
           <path d="M-47 -12C-42 -48 -20 -66 7 -64C36 -61 49 -39 47 -9C28 -24 -4 -30 -47 -12Z" fill={hair} />
           <path d="M-10 -65C-8 -88 18 -88 21 -66C12 -72 0 -72 -10 -65Z" fill={hair} />
           <circle cx={8} cy={-86} r={13} fill={hair} />
@@ -142,7 +155,7 @@ export const Barbarik: React.FC<{
               <Eye x={18} y={-8} k={blink} look={0.2} />
               <path d="M-28 -24Q-17 -31 -6 -25" stroke={ink} strokeWidth={4} fill="none" strokeLinecap="round" />
               <path d="M7 -25Q19 -31 30 -23" stroke={ink} strokeWidth={4} fill="none" strokeLinecap="round" />
-              <path d="M2 -5C-2 8 -2 14 5 18" stroke="#5A2E19" strokeWidth={3.2} fill="none" strokeLinecap="round" />
+              <path d="M2 -7C-3 5 -3 14 4 18M4 18C8 19 11 18 13 16" stroke="#5A2E19" strokeWidth={3.2} fill="none" strokeLinecap="round" />
               <path d={`M-15 28Q0 ${28 + smile * 14} 16 28`} stroke="#4C1E13" strokeWidth={4} fill="none" strokeLinecap="round" />
               <path d="M-41 2C-48 4 -48 20 -39 22" fill={skin} />
               <path d="M41 2C48 4 48 20 39 22" fill={skin} />
@@ -168,9 +181,9 @@ export const Krishna: React.FC<{
   seed?: number;
   palm?: boolean;
 }> = ({ f, x, y, s = 1, facing = 1, raised = 0, brahmin = false, silhouette = false, seed = 2, palm = false }) => {
-  const skin = silhouette ? "#15100E" : brahmin ? "#405F76" : "#2F638D";
+  const skin = silhouette ? "#15100E" : brahmin ? "#405F76" : "url(#bbSkinKrishna)";
   const shade = silhouette ? "#0F0B09" : "#214765";
-  const robe = silhouette ? "#15100E" : brahmin ? "#E8DCC5" : "#E4A92F";
+  const robe = silhouette ? "#15100E" : brahmin ? "#E8DCC5" : "url(#bbRobeGold)";
   const robe2 = silhouette ? "#0F0B09" : brahmin ? "#B85732" : "#2F6F73";
   const sw = Math.sin(f / 19 + seed) * 3.5;
   const blink = silhouette ? 0 : blinkK(f, seed * 23);
@@ -202,6 +215,12 @@ export const Krishna: React.FC<{
       </g>
       <g transform="translate(0 -286)">
         <ellipse cx={0} cy={0} rx={47} ry={53} fill={skin} stroke={silhouette ? skin : "#14283B"} strokeWidth={3} />
+        {!silhouette ? (
+          <g>
+            <path d="M-37 -5C-33 22 -19 42 2 48C-22 47 -41 30 -44 4Z" fill="#102A42" opacity={0.18} />
+            <path d="M28 -38C41 -22 44 5 34 28" stroke="#B9F1FF" strokeWidth={3.5} fill="none" opacity={0.42} strokeLinecap="round" />
+          </g>
+        ) : null}
         <path d="M-44 -14C-38 -50 -14 -66 10 -62C36 -58 48 -36 45 -8C25 -24 -4 -29 -44 -14Z" fill={silhouette ? skin : "#101019"} />
         {!brahmin ? (
           <g>
@@ -225,8 +244,8 @@ export const Krishna: React.FC<{
             <Eye x={18} y={-8} k={blink} look={0} />
             <path d="M-28 -24Q-17 -29 -6 -24" stroke="#07111E" strokeWidth={4} fill="none" strokeLinecap="round" />
             <path d="M7 -24Q19 -29 30 -23" stroke="#07111E" strokeWidth={4} fill="none" strokeLinecap="round" />
-            <path d="M0 -15V16" stroke="#F1D469" strokeWidth={4} strokeLinecap="round" opacity={0.9} />
-            <path d="M-14 28Q0 36 15 28" stroke="#0B1D2D" strokeWidth={4} fill="none" strokeLinecap="round" />
+            <path d="M0 -15V13M0 13C4 17 8 18 12 15" stroke="#F1D469" strokeWidth={4} strokeLinecap="round" opacity={0.9} fill="none" />
+            <path d="M-14 28Q0 36 15 28" stroke="#0B1D2D" strokeWidth={4} fill="none" strokeLinecap="round" /><path d="M-8 31Q0 34 9 31" stroke="#8CC8DC" strokeWidth={1.4} fill="none" opacity={0.45} />
             {brahmin ? <path d="M-24 4Q0 15 24 4" stroke="#E8DCC5" strokeWidth={4} opacity={0.4} fill="none" /> : null}
           </g>
         ) : null}
@@ -356,10 +375,14 @@ export const SereneHead: React.FC<{ f: number; x: number; y: number; s?: number;
       <path d="M-66 -18C-58 -64 -25 -88 10 -84C50 -78 68 -48 65 -12C34 -36 -8 -42 -66 -18Z" fill="#16100B" />
       <path d="M-11 -84C-8 -112 22 -112 25 -84C12 -92 1 -92 -11 -84Z" fill="#16100B" />
       <circle cx={9} cy={-104} r={15} fill="#16100B" />
-      <path d="M-34 -8Q-20 -15 -7 -8M8 -8Q22 -15 36 -8" stroke="#21150E" strokeWidth={5} fill="none" strokeLinecap="round" />
-      <path d="M-26 6Q-14 1 -3 6M5 6Q17 1 29 6" stroke="#21150E" strokeWidth={4} fill="none" strokeLinecap="round" opacity={0.85} />
-      <path d="M2 6C-3 20 -2 28 6 32" stroke="#5A2E19" strokeWidth={3.5} fill="none" strokeLinecap="round" />
+      <path d="M-35 -12Q-20 -20 -5 -12M6 -12Q21 -20 37 -12" stroke="#21150E" strokeWidth={5.5} fill="none" strokeLinecap="round" />
+      <Eye x={-19} y={3} k={0.55} look={0} />
+      <Eye x={20} y={3} k={0.55} look={0} />
+      <path d="M2 4C-3 19 -2 29 7 33M7 33C11 34 14 32 16 30" stroke="#5A2E19" strokeWidth={3.5} fill="none" strokeLinecap="round" />
       <path d="M-20 43Q0 54 22 43" stroke="#4C1E13" strokeWidth={4.5} fill="none" strokeLinecap="round" />
+      <path d="M-12 46Q0 51 14 46" stroke="#D88B65" strokeWidth={1.7} fill="none" opacity={0.55} />
+      <path d="M0 -70V-34" stroke="#F1D469" strokeWidth={5} strokeLinecap="round" opacity={0.95} />
+      <path d="M-56 -34C-30 -50 28 -50 58 -34" stroke="#D8A93D" strokeWidth={6} fill="none" opacity={0.85} />
       <circle cx={-34} cy={-3} r={3} fill="#FFD39A" opacity={0.65} />
     </g>
   );
