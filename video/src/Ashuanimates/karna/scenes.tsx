@@ -128,8 +128,8 @@ export const DawnOffering: React.FC<SP> = ({ f, a, b }) => {
         <KarnaFigure f={f} x={0} y={0} s={1.28} offering={1} glow={1.1} seed={19} />
         <WaterPour f={f} x={12} y={-250} s={1.2} />
       </g>
-      <g transform={`translate(${lerp(930, 760, walk)} 1515) scale(${-0.9} 0.9)`} opacity={0.82}>
-        <Bust look={LOOKS.indra} f={f} x={-430} y={-1060} s={0.62} e={{ eye: blinkF(f, 23), smile: 0.18 }} />
+      <g opacity={0.82}>
+        <Bust look={LOOKS.indra} f={f} flip x={lerp(230, 105, walk)} y={35} s={0.76} e={{ eye: blinkF(f, 23), smile: 0.18 }} />
       </g>
       <ellipse cx={500} cy={1530} rx={190} ry={32} fill="#FFE7A0" opacity={0.11} filter="url(#bbBlur8)" />
     </Cam>
@@ -192,13 +192,11 @@ export const NoArmour: React.FC<SP> = ({ f, a, b }) => (
 );
 
 export const DaanveerTitle: React.FC<SP> = ({ f, a, b }) => {
-  const k = prog(f, a + 8, a + 32);
   return (
     <Cam f={f} a={a} b={b} cx={540} cy={1080} s0={1.02} s1={1.1} dy={-18}>
       <SolarBattlefield f={f} empty={1} />
       <SunGod f={f} x={540} y={690} s={0.82} />
       <KarnaFigure f={f} x={540} y={1530} s={1.38} noArmour glow={1.2} seed={43} />
-      <text x={540} y={1180} textAnchor="middle" fontSize={104 + k * 8} fontWeight={400} fill="#FFF2C2" stroke="#3B1C0D" strokeWidth={5} style={{ fontFamily: "Rozha One, serif" }} opacity={0.1 + k * 0.9}>दानवीर कर्ण</text>
     </Cam>
   );
 };

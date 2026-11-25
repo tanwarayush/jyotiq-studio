@@ -173,10 +173,30 @@ def stem_drone():
     return y * 0.12
 
 
+WORDS = clock.get("words", [])
+
+def line_a(line):
+    xs = [w.get("fa", 0) for w in WORDS if w.get("l") == line]
+    return min(xs) if xs else 0
+
+def line_b(line):
+    xs = [w.get("fb", 0) for w in WORDS if w.get("l") == line]
+    return max(xs) if xs else TOTAL
+
+def line_m(line):
+    return int((line_a(line) + line_b(line)) / 2)
+
+def word_f(line, prefix, default=None):
+    for w in WORDS:
+        if w.get("l") == line and str(w.get("w", "")).startswith(prefix):
+            return w.get("fa", line_a(line))
+    return line_a(line) if default is None else default
+
+
 def stem_percussion():
     y = np.zeros((N, 2), np.float32)
-    # slow damru/tabla cycle, slightly denser under the scale paradox and battle-watch sections
-    pulse_regions = [(0, DUR, 0.032), (sec(1199), sec(1403), 0.055), (sec(1960), sec(2169), 0.045)]
+    # restrained solar pulse, denser through the demand and donation sections
+    pulse_regions = [(0, DUR, 0.028), (sec(line_a(7)), sec(line_b(10)), 0.052), (sec(line_a(3)), sec(line_b(3)), 0.042)]
     for start, end, gain in pulse_regions:
         t = start + 0.22
         k = 0
@@ -189,56 +209,57 @@ def stem_percussion():
             k += 1
     return y
 
-
 def stem_flute():
     y = np.zeros((N, 2), np.float32)
-    # memory motif: soft, sparse, almost a half-remembered lullaby
-    memory = [(1048, 293.66, 1.3), (1066, 349.23, 1.0), (1084, 392.0, 1.2), (1118, 349.23, 1.0), (1132, 293.66, 1.7)]
-    for fr, f, d in memory:
-        add(y, flute_note(f, d, fr), sec(fr), -0.18, 0.09)
-    # ending: soft devotional flute answering the shrine reveal
-    ending = [
-        (2178, 440.0, 1.25), (2200, 523.25, 1.2), (2228, 493.88, 0.9), (2244, 440.0, 1.35),
-        (2268, 392.0, 1.0), (2288, 440.0, 1.5), (2318, 523.25, 1.8), (2342, 440.0, 2.0),
-    ]
-    for fr, f, d in ending:
-        add(y, flute_note(f, d, fr), sec(fr), 0.12 if fr % 2 else -0.12, 0.18)
+    # Surya's warning motif: warm, sparse and restrained
+    a5 = line_a(5)
+    for k, (off, f, d) in enumerate([(4, 293.66, 1.2), (28, 349.23, 1.0), (52, 392.0, 1.3), (88, 349.23, 1.0), (112, 293.66, 1.5)]):
+        add(y, flute_note(f, d, 100 + k), sec(a5 + off), -0.16, 0.075)
+    # final danveer reveal: a noble, quiet flute answer
+    a12 = line_a(12)
+    for k, (off, f, d) in enumerate([(2, 440.0, 1.2), (28, 523.25, 1.1), (54, 493.88, 0.9), (74, 440.0, 1.4), (104, 392.0, 1.0), (128, 440.0, 1.8)]):
+        add(y, flute_note(f, d, 150 + k), sec(a12 + off), 0.12 if k % 2 else -0.12, 0.16)
     return y
-
 
 def stem_bells():
     y = np.zeros((N, 2), np.float32)
-    # Shiva / boon bells, restrained
-    for k, fr in enumerate([424, 486, 548]):
-        add(y, bell(660 + k * 110, 2.6, 30 + k), sec(fr), -0.22 + k * 0.2, 0.045)
-    # shrine bells and final reveal
-    for k, (fr, f, g) in enumerate([(2178, 880, 0.12), (2218, 990, 0.075), (2254, 1320, 0.065), (2316, 880, 0.12), (2348, 660, 0.10)]):
-        add(y, bell(f, 3.4, 90 + k), sec(fr), -0.18 + 0.12 * (k % 3), g)
+    # sun/dawn bells, sparse and devotional
+    for k, (fr, fq, g) in enumerate([
+        (line_a(1), 660, 0.035), (line_a(5), 760, 0.045), (line_a(7), 880, 0.055),
+        (word_f(9, "कवच", line_m(9)), 990, 0.07), (line_a(10), 1120, 0.06), (line_a(12), 880, 0.10),
+    ]):
+        add(y, bell(fq, 3.0, 90 + k), sec(fr), -0.18 + 0.12 * (k % 3), g)
     return y
-
 
 def stem_sfx():
     y = np.zeros((N, 2), np.float32)
-    # arrows lighting one by one
-    for k, fr in enumerate([493, 530, 570]):
-        add(y, whoosh(0.52, 200 + k, True), sec(fr - 4), -0.2 + k * 0.2, 0.12)
-        add(y, bell(980 + k * 160, 1.3, 210 + k), sec(fr), -0.2 + k * 0.2, 0.055)
-    # deep hit exactly on Barbarik's "एक पल" and a softer echo after it
-    add(y, deep_hit(1.5, 300), sec(1009), 0.0, 0.72)
-    add(y, deep_hit(1.0, 301), sec(1030), 0.0, 0.16)
-    # golden scale tipping: metallic-air movement, not a literal creak sample
-    for k, fr in enumerate([1218, 1286, 1354]):
-        add(y, whoosh(0.72, 350 + k), sec(fr), -0.1 + 0.1 * k, 0.10)
-        add(y, bell(520 + k * 55, 1.6, 360 + k), sec(fr + 5), 0.05, 0.035)
-    # Krishna's divine interventions
-    for k, fr in enumerate([184, 728, 1691]):
-        add(y, shimmer(1.8, 500 + k), sec(fr), 0.15, 0.075)
-    # white flash at the sacrifice: bright air plus a deep, clean hit
-    add(y, whoosh(0.9, 600, True), sec(1805), 0.0, 0.16)
-    add(y, deep_hit(1.2, 601), sec(1808), 0.0, 0.44)
-    # hilltop battle below: distant arrow air and low pulses
-    for k, fr in enumerate([1995, 2048, 2102, 2150]):
-        add(y, whoosh(0.7, 700 + k), sec(fr), -0.25 + 0.16 * (k % 4), 0.045)
+    # arrow shatters on the divine kavach
+    hit3 = word_f(3, "अर्जुन", line_m(3))
+    add(y, whoosh(0.55, 200, True), sec(hit3 - 8), -0.15, 0.11)
+    add(y, deep_hit(0.9, 201), sec(hit3), 0.0, 0.23)
+    add(y, bell(1240, 1.2, 202), sec(hit3 + 2), 0.18, 0.045)
+    # Indra thunder and watchful presence
+    indra = line_a(4)
+    add(y, deep_hit(1.6, 300), sec(indra + 8), 0.0, 0.34)
+    add(y, whoosh(1.0, 301), sec(indra + 10), -0.1, 0.11)
+    # Surya's warning shimmer
+    for k, fr in enumerate([line_a(5), line_a(5) + 38]):
+        add(y, shimmer(1.8, 400 + k), sec(fr), 0.1, 0.065)
+    # dawn water offering: bright airy movement, kept subtle under speech
+    dawn = line_a(7)
+    add(y, shimmer(1.5, 500), sec(dawn), -0.1, 0.045)
+    add(y, whoosh(0.8, 501), sec(dawn + 40), 0.1, 0.055)
+    # kavach leaving the body: golden air then a clean deep hit
+    gift = word_f(9, "कवच", line_m(9))
+    add(y, whoosh(1.0, 600, True), sec(gift - 5), 0.0, 0.15)
+    add(y, deep_hit(1.3, 601), sec(gift + 4), 0.0, 0.38)
+    # amogh shakti reveal
+    shakti = word_f(10, "शक्ति", line_m(10))
+    add(y, shimmer(2.2, 700), sec(shakti), 0.15, 0.09)
+    add(y, bell(1320, 2.4, 701), sec(shakti + 5), 0.0, 0.07)
+    # final title warm hit
+    final = word_f(12, "दानवीर", line_m(12))
+    add(y, deep_hit(1.4, 800), sec(final), 0.0, 0.26)
     return y
 
 
