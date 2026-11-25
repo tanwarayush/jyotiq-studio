@@ -15,6 +15,8 @@ import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
 import { JobCopilotPromo, jobCopilotSchema } from "./JobCopilotPromo";
 import { EKPANNA_TOTAL, EkPannaEp1 } from "./Karmeq/ekpanna/ep1/EkPannaEp1";
+import { BarbarikCover, BarbarikEpisode } from "./Ashuanimates/barbarik/Episode";
+import { TOTAL as BARBARIK_TOTAL } from "./Ashuanimates/barbarik/timing";
 import { JyotiqEndSting } from "./Jyotiq/endSting";
 import { JyotiqReelOpen, OPEN_TOTAL } from "./Jyotiq/brandopen/ReelOpen";
 import { JyotiqTestimonial } from "./Jyotiq/testimonial";
@@ -526,6 +528,9 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="GuruTeghReel" component={GuruTeghReel} durationInFrames={GT_TOTAL} fps={30} width={1080} height={1920} defaultProps={{}} />
       {/* क्या होता अगर… Ep2 · शनि की टेढ़ी नज़र: the full reel */}
       <Composition id="KyaHotaEp2" component={KyaHotaEp2} durationInFrames={KQ2_TOTAL} fps={30} width={1080} height={1920} defaultProps={{}} />
+      {/* @ashuanimates Barbarik: original painted Hindi mythology reel, style-reference only */}
+      <Composition id="AshuanimatesBarbarik" component={BarbarikEpisode} durationInFrames={BARBARIK_TOTAL} fps={30} width={1080} height={1920} defaultProps={{ audio: true }} />
+      <Composition id="AshuanimatesBarbarikCover" component={BarbarikCover} durationInFrames={1} fps={30} width={1080} height={1920} defaultProps={{}} />
     </>
   );
 };
