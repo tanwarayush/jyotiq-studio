@@ -36,6 +36,9 @@ export const LOOKS: Record<string, Look> = {
   barbarik: { id: "barbarik", skin: ["#d79a68", "#a8643d", "#6e3b24"], hair: "warriorKnot", hairColor: "#17100c", beard: "none", cloth: "#c77335", clothDark: "#5b2c1d", trim: "#f2c46d", armour: "#315f73", tilak: "line" },
   krishna: { id: "krishna", skin: ["#77b6d2", "#3f789e", "#214765"], hair: "crown", hairColor: "#101019", beard: "none", cloth: "#e4a92f", clothDark: "#7a4c12", trim: "#73b6ad", armour: "#e0ae3d", tilak: "line" },
   krishnaBrahmin: { id: "krishnaBrahmin", skin: ["#77b6d2", "#3f789e", "#214765"], hair: "warriorKnot", hairColor: "#101019", beard: "none", cloth: "#e8dcc5", clothDark: "#8a5f3c", trim: "#b85732", tilak: "line", thread: true },
+  karna: { id: "karna", skin: ["#e5aa73", "#bd7a4a", "#754327"], hair: "warriorKnot", hairColor: "#17100c", beard: "none", cloth: "#f0dfb8", clothDark: "#7a451d", trim: "#f2c46d", armour: "#d99a28", tilak: "line" },
+  karnaNoArmour: { id: "karnaNoArmour", skin: ["#e5aa73", "#bd7a4a", "#754327"], hair: "warriorKnot", hairColor: "#17100c", beard: "none", cloth: "#f0dfb8", clothDark: "#7a451d", trim: "#c97836", tilak: "line" },
+  indra: { id: "indra", skin: ["#f0c895", "#c9905e", "#754a32"], hair: "crown", hairColor: "#21130c", beard: "moustache", beardColor: "#21130c", cloth: "#f1dfb8", clothDark: "#8a5528", trim: "#f2c46d", armour: "#d7a037", tilak: "line" },
 };
 
 const FACE =

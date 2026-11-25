@@ -196,3 +196,66 @@ export const Shrine: React.FC<{ f: number; push?: number }> = ({ f, push = 0 }) 
     </g>
   );
 };
+
+
+export const SolarBattlefield: React.FC<{ f: number; night?: number; river?: number; empty?: number }> = ({ f, night = 0, river = 0, empty = 0 }) => {
+  const drift = f * 0.1;
+  return (
+    <g>
+      <rect width={W} height={H} fill={night > 0.5 ? "#101827" : "url(#bbSky)"} />
+      <circle cx={650} cy={620} r={night > 0.5 ? 180 : 330} fill="url(#bbSun)" opacity={night > 0.5 ? 0.42 : 0.96} />
+      <circle cx={650} cy={620} r={390} fill="#FFE7A0" opacity={night > 0.5 ? 0.06 : 0.12} filter="url(#bbBlur18)" />
+      <g transform={`translate(${-drift} 0)`}>
+        <CloudBand f={f} y={235} s={0.9} o={night > 0.5 ? 0.32 : 0.48} drift={0.08} />
+        <CloudBand f={f + 31} y={430} s={1.1} o={0.34} drift={0.11} />
+      </g>
+      <path d="M-80 980C180 860 340 930 520 835C720 730 900 900 1160 790V1280H-80Z" fill="#222A3B" opacity={night > 0.5 ? 0.9 : 0.68} />
+      <path d="M-80 1080C210 965 390 1035 590 940C790 850 950 990 1160 905V1350H-80Z" fill="#171F2E" opacity={0.92} />
+      {river > 0.01 ? (
+        <g>
+          <rect y={1120} width={W} height={800} fill="#162536" />
+          <path d={`M0 ${1190 + Math.sin(f / 18) * 3}C220 1165 420 1210 650 1182C820 1162 960 1195 1080 1178V1920H0Z`} fill="#263D52" />
+          {Array.from({ length: 24 }, (_, i) => (
+            <path key={i} d={`M${rnd(i, 140) * W} ${1215 + rnd(i, 141) * 500}h${42 + rnd(i, 142) * 100}`} stroke={i % 3 ? "#F2C46D" : "#8FB8FF"} strokeWidth={2 + rnd(i, 143) * 3} opacity={(0.08 + rnd(i, 144) * 0.18) * river} />
+          ))}
+          <ellipse cx={650} cy={1250} rx={150} ry={28} fill="#FFE7A0" opacity={0.13 * river} filter="url(#bbBlur18)" />
+        </g>
+      ) : (
+        <g>
+          <rect y={1120} width={W} height={800} fill="url(#bbGround)" />
+          <g opacity={1 - empty}>
+            <DotArmy x={96} y={1150} cols={14} rows={6} dx={19} dy={17} color="#FFD67A" f={f} shrink={0.8} />
+            <DotArmy x={960} y={1150} cols={14} rows={6} dx={19} dy={17} color="#FFAF68" f={f + 5} flip shrink={0.8} />
+          </g>
+        </g>
+      )}
+      <Motes f={f} n={night > 0.5 ? 24 : 36} color={night > 0.5 ? "#B9D4FF" : "#FFD06F"} ember={night < 0.5} seed={83} y0={650} y1={1760} />
+    </g>
+  );
+};
+
+export const IndraClouds: React.FC<{ f: number }> = ({ f }) => (
+  <g>
+    <rect width={W} height={H} fill="#111827" />
+    <CloudBand f={f} y={350} s={1.4} o={0.78} drift={0.08} />
+    <CloudBand f={f + 21} y={620} s={1.25} o={0.62} drift={0.12} />
+    <circle cx={540} cy={760} r={430} fill="#8FB8FF" opacity={0.1} filter="url(#bbBlur18)" />
+    {Array.from({ length: 5 }, (_, i) => (
+      <path key={i} d={`M${170 + i * 170 + Math.sin(f / 15 + i) * 10} ${430 + i * 35}l${-30 + rnd(i, 150) * 60} 170l${35 - rnd(i, 151) * 70} -25l${-25 + rnd(i, 152) * 50} 190`} stroke="#CFE8FF" strokeWidth={4 + (i % 2)} fill="none" opacity={0.08 + 0.12 * Math.max(0, Math.sin(f / 19 + i * 1.7))} />
+    ))}
+    <Motes f={f} n={30} color="#B9D4FF" seed={91} y0={400} y1={1600} />
+  </g>
+);
+
+export const NightRiver: React.FC<{ f: number; moon?: boolean }> = ({ f, moon = true }) => (
+  <g>
+    <rect width={W} height={H} fill="#0D1423" />
+    {moon ? <circle cx={760} cy={360} r={120} fill="#E9EDF5" opacity={0.85} /> : null}
+    {Array.from({ length: 65 }, (_, i) => <circle key={i} cx={rnd(i, 160) * W} cy={rnd(i, 161) * 900} r={0.8 + rnd(i, 162) * 2} fill="#FFF4D6" opacity={0.18 + rnd(i, 163) * 0.55} />)}
+    <CloudBand f={f} y={270} s={1.0} o={0.35} drift={0.08} />
+    <path d="M-80 1010C190 920 370 1005 590 920C790 850 950 980 1160 900V1320H-80Z" fill="#111A2A" />
+    <rect y={1110} width={W} height={810} fill="#101E2D" />
+    {Array.from({ length: 18 }, (_, i) => <path key={i} d={`M${rnd(i, 170) * W} ${1180 + rnd(i, 171) * 520}h${35 + rnd(i, 172) * 90}`} stroke="#8FB8FF" strokeWidth={2} opacity={0.05 + rnd(i, 173) * 0.15} />)}
+    <Motes f={f} n={24} color="#A8C8FF" seed={97} y0={560} y1={1640} />
+  </g>
+);

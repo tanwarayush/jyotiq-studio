@@ -423,3 +423,100 @@ export const ThreadBlessing: React.FC<{ f: number; x: number; y: number; s?: num
     <circle cx={0} cy={0} r={9} fill="#F4C05A" />
   </g>
 );
+
+export const KarnaFigure: React.FC<{
+  f: number;
+  x: number;
+  y: number;
+  s?: number;
+  facing?: number;
+  silhouette?: boolean;
+  noArmour?: boolean;
+  offering?: number;
+  glow?: number;
+  seed?: number;
+}> = ({ f, x, y, s = 1, facing = 1, silhouette = false, noArmour = false, offering = 0, glow = 0, seed = 1 }) => {
+  const skin = silhouette ? "#17110E" : "url(#bbSkinWarm)";
+  const shade = silhouette ? "#100C0A" : "#633620";
+  const cloth = silhouette ? "#17110E" : "#F0DFB8";
+  const clothDark = silhouette ? "#100C0A" : "#8A5528";
+  const gold = silhouette ? "#17110E" : "url(#bbGold)";
+  const hair = silhouette ? "#0D0A08" : "#17100B";
+  const bob = Math.sin(f / 24 + seed) * 2;
+  const sw = Math.sin(f / 16 + seed) * 4;
+  const armLift = offering * 44;
+  return (
+    <g transform={`translate(${x} ${y + bob}) scale(${facing * s} ${s})`}>
+      <ellipse cx={0} cy={5} rx={78} ry={15} fill="#080606" opacity={0.28} />
+      {glow > 0 ? <circle cx={0} cy={-190} r={145 * glow} fill="#FFE39A" opacity={0.13 * glow} filter="url(#bbBlur18)" /> : null}
+      <path d="M-42 -128C-56 -82 -52 -35 -36 0H-8L-5 -112Z" fill={shade} />
+      <path d="M42 -128C56 -82 52 -35 36 0H8L5 -112Z" fill={shade} />
+      <path d={`M-58 -142C-50 -92 -40 -52 -20 -28C-5 -15 12 -15 28 -28C46 -55 55 -98 55 -142C30 -158 -28 -158 -58 -142Z`} fill={cloth} stroke={silhouette ? cloth : "#6B3B1F"} strokeWidth={4} />
+      <path d={`M-55 -108C-24 -88 18 -88 55 -110L58 -82C28 -60 -20 -62 -58 -84Z`} fill={clothDark} opacity={0.88} />
+      <path d={`M-54 -82C-28 -62 20 -60 56 -78L55 -50C24 -30 -24 -34 -56 -52Z`} fill={silhouette ? cloth : "#D89545"} opacity={0.55} />
+      {!noArmour ? (
+        <g>
+          <path d="M-48 -226C-38 -180 -28 -152 0 -142C28 -152 40 -180 48 -226C24 -238 -24 -238 -48 -226Z" fill={gold} stroke={silhouette ? gold : "#74430F"} strokeWidth={4} />
+          <path d="M-35 -210C-12 -198 14 -198 37 -210M-38 -188C-12 -174 14 -174 38 -188M-28 -166C-8 -156 10 -156 28 -166" stroke="#FFF0A8" strokeWidth={3} opacity={silhouette ? 0 : 0.48} fill="none" />
+          <circle cx={0} cy={-190} r={13} fill={silhouette ? gold : "#FFF1A8"} opacity={0.8} />
+        </g>
+      ) : (
+        <path d="M-42 -222C-32 -178 -22 -154 0 -144C22 -154 32 -178 42 -222C20 -232 -20 -232 -42 -222Z" fill={skin} stroke={silhouette ? skin : "#7A472C"} strokeWidth={3} />
+      )}
+      <g transform={`translate(${-44 - offering * 8} ${-205 - armLift}) rotate(${-18 - offering * 24 + sw * 0.25})`}>
+        <path d="M0 0C-20 38 -25 68 -14 94" stroke={skin} strokeWidth={20} strokeLinecap="round" fill="none" />
+        <circle cx={-12} cy={98} r={13} fill={skin} />
+      </g>
+      <g transform={`translate(${44 + offering * 8} ${-205 - armLift}) rotate(${18 + offering * 24 - sw * 0.25})`}>
+        <path d="M0 0C20 38 25 68 14 94" stroke={skin} strokeWidth={20} strokeLinecap="round" fill="none" />
+        <circle cx={12} cy={98} r={13} fill={skin} />
+      </g>
+      <path d="M-28 -254C-30 -224 -20 -205 0 -200C20 -205 30 -224 28 -254C14 -266 -14 -266 -28 -254Z" fill={skin} />
+      <circle cx={0} cy={-287} r={42} fill={skin} />
+      <path d="M-40 -292C-38 -330 -10 -346 22 -336C44 -328 48 -300 35 -278C28 -304 8 -318 -18 -312C-32 -308 -38 -300 -40 -292Z" fill={hair} />
+      <ellipse cx={-6} cy={-334} rx={32} ry={20} fill={hair} />
+      <circle cx={-16} cy={-356} r={18} fill={hair} />
+      <path d="M-12 -286Q1 -294 16 -286" stroke="#1B0E08" strokeWidth={4} fill="none" strokeLinecap="round" />
+      <path d="M-2 -270Q10 -266 20 -274" stroke="#5B2B18" strokeWidth={3} fill="none" strokeLinecap="round" />
+      <circle cx={-35} cy={-264} r={7} fill={silhouette ? hair : "#F2C46D"} />
+      <path d="M-35 -257L-42 -238L-28 -238Z" fill={silhouette ? hair : "#F2C46D"} />
+      <path d="M-8 -318L-4 -342" stroke="#C23B2D" strokeWidth={4} strokeLinecap="round" opacity={silhouette ? 0 : 1} />
+    </g>
+  );
+};
+
+export const ShaktiSpear: React.FC<{ x: number; y: number; s?: number; rot?: number; glow?: number }> = ({ x, y, s = 1, rot = 0, glow = 1 }) => (
+  <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}>
+    <path d="M0 -170V150" stroke="#FFF7DA" strokeWidth={18} opacity={0.22 * glow} filter="url(#bbBlur8)" />
+    <path d="M0 -170V150" stroke="#D9B66A" strokeWidth={7} strokeLinecap="round" />
+    <path d="M0 -220L-28 -162H28Z" fill="#FFF8D6" stroke="#8B551D" strokeWidth={4} />
+    <circle cx={0} cy={-184} r={30 * glow} fill="#FFF4C2" opacity={0.25 * glow} filter="url(#bbBlur8)" />
+    <path d="M-24 150H24L0 196Z" fill="#D9B66A" />
+  </g>
+);
+
+export const KavachPiece: React.FC<{ x: number; y: number; s?: number; rot?: number; glow?: number }> = ({ x, y, s = 1, rot = 0, glow = 1 }) => (
+  <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}>
+    <circle cx={0} cy={-30} r={135 * glow} fill="#FFE7A0" opacity={0.14 * glow} filter="url(#bbBlur18)" />
+    <path d="M-80 -120C-66 -52 -36 -8 0 10C36 -8 66 -52 80 -120C42 -142 -42 -142 -80 -120Z" fill="url(#bbGold)" stroke="#6B3F13" strokeWidth={6} />
+    <path d="M-58 -98C-20 -76 20 -76 58 -98M-62 -66C-20 -42 20 -42 62 -66M-40 -30C-12 -16 12 -16 40 -30" stroke="#FFF0A8" strokeWidth={5} fill="none" opacity={0.65} />
+    <circle cx={0} cy={-78} r={21} fill="#FFF1A8" stroke="#9A5A18" strokeWidth={4} />
+  </g>
+);
+
+export const BabyBasket: React.FC<{ f: number; x: number; y: number; s?: number }> = ({ f, x, y, s = 1 }) => {
+  const bob = Math.sin(f / 13) * 7;
+  return (
+    <g transform={`translate(${x} ${y + bob}) scale(${s})`}>
+      <ellipse cx={0} cy={44} rx={118} ry={20} fill="#0B1720" opacity={0.22} />
+      <path d="M-96 -12C-70 48 70 48 96 -12C58 10 -58 10 -96 -12Z" fill="#8A5A2E" stroke="#3E2616" strokeWidth={5} />
+      <path d="M-82 -5C-35 16 35 16 82 -5M-66 18C-25 32 25 32 66 18" stroke="#D4A15A" strokeWidth={4} fill="none" opacity={0.65} />
+      <circle cx={0} cy={-32} r={34} fill="url(#bbSkinWarm)" />
+      <path d="M-26 -45C-12 -62 16 -62 28 -42C12 -50 -8 -50 -26 -45Z" fill="#17100B" />
+      <circle cx={-11} cy={-33} r={3.5} fill="#1A0D07" /><circle cx={13} cy={-33} r={3.5} fill="#1A0D07" />
+      <path d="M-8 -18Q2 -12 12 -19" stroke="#6B321E" strokeWidth={2.5} fill="none" />
+      <path d="M-38 -2C-20 -28 22 -28 40 -2C18 10 -18 10 -38 -2Z" fill="url(#bbGold)" opacity={0.95} />
+      <circle cx={0} cy={-5} r={50} fill="#FFE8A0" opacity={0.16} filter="url(#bbBlur8)" />
+    </g>
+  );
+};
