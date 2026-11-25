@@ -20,7 +20,7 @@ Branch: `ashuanimates/mahabharata-10`. Series overrides from the brief apply: no
 ## Reel status
 | reel | title | status | notes |
 |---|---|---|---|
-| 01 | बर्बरीक: एक पल का योद्धा | in progress | Draft local render completed: 79.146 s, 1080x1920, 30 fps, H.264 yuv420p + AAC 320k/48k, 62 MB. Draft contact-sheet QA failed the quality bar because the front-facing figures read too childlike/clip-art. Shared kit created at `video/src/Ashu/mahabharata/kit/`; captions now chunk to 2–5 words; detailed Bharata-style profile busts are being integrated for Barbarik, Krishna, Bhishma and Drona before the final render. |
+| 01 | बर्बरीक: एक पल का योद्धा | released/QA passed | Final master `video/out/ashuanimates-barbarik/barbarik_reel_v2.mp4`: 79.146 s, 1080x1920, 30 fps, H.264 yuv420p + AAC 320k/48k, 61 MiB, −14.4 LUFS, −2.6 dBTP, no black/freeze hits. Cover `barbarik_cover.png` uses the detailed profile bust. Release: `ashu-mahabharata-reel01-v1`. |
 | 02 | कर्ण: जिसने अपनी मौत दान कर दी | not started | exact script in BRIEF.md |
 | 03 | एकलव्य: वो अंगूठा जो इतिहास बन गया | not started | exact script in BRIEF.md |
 | 04 | शकुनि: पासे जो बदला थे | not started | exact script in BRIEF.md |
@@ -79,3 +79,13 @@ Branch: `ashuanimates/mahabharata-10`. Series overrides from the brief apply: no
 2. Then process reel 2 audio: `cd episodes/ashu-mahabharata/reel02_karna && /usr/local/bin/python3 tools/transcribe.py && /Users/ayushrajput/earshot/.venv/bin/python tools/vo_prep.py && /Users/ayushrajput/earshot/.venv/bin/python tools/score_mix.py`. These write `audio/vo/clock.json`, `audio/vo/vo.wav`, `audio/mix_final.wav`, and `video/src/Ashuanimates/karna/timing.ts` (repo). Copy the final mix physically to `video/public/ashuanimates/karna/mix.wav` before any render; symlinks fail in Remotion bundling.
 3. Reel 2 code already present: `video/src/Ashuanimates/karna/scenes.tsx` and `Episode.tsx`. Still needed: register `KarnaEpisode`/`KarnaCover` in Root after reading Root, typecheck, render key stills, fix weak art, then full render/QA/release.
 4. Never run Whisper/Remotion/big ffmpeg concurrently on this 8 GB Mac. Check `pgrep -fl "[r]emotion|[c]hrome-headless|[w]hisper-cli"` first.
+
+## Reel 1 final QA checkpoint — 2026-11-26 04:55 IST
+- Canonical render completed from this clone: `video/out/ashuanimates-barbarik/barbarik_reel_v2.mp4`.
+- Remotion produced a full-range `yuvj420p` intermediate despite `--pixel-format=yuv420p`; the delivery master was range-converted once with ffmpeg CRF 12 and is now ffprobe-verified `yuv420p`.
+- Final stream: H.264 High 1080×1920, exact 30 fps, 2,373 frames, AAC LC 48 kHz stereo about 320 kbps, duration 79.146667 s, size 63,797,874 bytes.
+- Final audio: −14.4 LUFS integrated, 3.2 LU range, −2.6 dBTP. blackdetect/freezedetect scan: no hits.
+- Visual review inspected `contact12.png`, first/hook, `एक पल`, sacrifice, hill sequence and end card. Hook is present exactly from frame 0; the `एक पल` close-up uses the detailed profile bust; sacrifice remains symbolic with no gore.
+- `render_final.sh` was corrected from the stale copied Bharata script to the actual Barbarik pipeline, including the physical-mix guard, full-range intermediate, yuv420p delivery conversion, cover render and final QA.
+- Cover composition upgraded from front-facing full-body clip-art to the detailed Barbarik profile bust plus three arrows and `भाग 1 · बर्बरीक`; rendered at `video/out/ashuanimates-barbarik/barbarik_cover.png`.
+- Next: create GitHub release assets, commit final report/progress/cover-source changes, then process Karna audio timing and finish the Karna episode.

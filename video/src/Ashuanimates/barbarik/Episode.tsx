@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, Audio, staticFile, useCurrentFrame } from "remotion";
-import { Defs, H, PaperGrain, ROZHA, Vignette, W, outCubic, prog } from "../../Ashu/mahabharata/kit/kit";
+import { Defs, H, MUKTA, PaperGrain, ROZHA, Vignette, W, outCubic, prog } from "../../Ashu/mahabharata/kit/kit";
 import { CaptionTrack, HookTitle, SeriesEndCard } from "../../Ashu/mahabharata/kit/captions";
 import { PHRASES, WORDS } from "./timing";
 import {
@@ -28,7 +28,8 @@ import {
   WatchBattle,
   WishWatch,
 } from "./scenes";
-import { Barbarik, ThreeArrows } from "../../Ashu/mahabharata/kit/cast";
+import { ThreeArrows } from "../../Ashu/mahabharata/kit/cast";
+import { Bust, LOOKS } from "../../Ashu/mahabharata/kit/bust";
 import { Battlefield } from "../../Ashu/mahabharata/kit/world";
 
 type Shot = { a: number; b: number; render: (f: number, a: number, b: number) => React.ReactNode };
@@ -108,15 +109,18 @@ export const BarbarikCover: React.FC = () => {
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", inset: 0 }}>
         <Defs />
         <Battlefield f={f} deep armies={0.55} />
-        <circle cx={540} cy={1000} r={500} fill="#FFBF65" opacity={0.14} filter="url(#bbBlur18)" />
-        <Barbarik f={f} x={540} y={1515} s={1.75} mode="stand" quiver glow={3} seed={8} />
-        <ThreeArrows x={540} y={620} s={1.25} f={f} lit={3} upright={false} />
+        <circle cx={540} cy={980} r={520} fill="#FFBF65" opacity={0.16} filter="url(#bbBlur18)" />
+        <ThreeArrows x={540} y={545} s={1.25} f={f} lit={3} upright={false} />
+        <Bust look={LOOKS.barbarik} f={f} x={-34} y={28} s={1.04} e={{ eye: 1, smile: 0.28, brow: 0.15 }} />
         <PaperGrain o={0.17} />
         <Vignette o={0.55} />
       </svg>
-      <div style={{ position: "absolute", left: 55, right: 55, top: 150, textAlign: "center" }}>
-        <div style={{ fontFamily: ROZHA, fontSize: 92, lineHeight: 1.13, color: "#FFF3CF", textShadow: "0 7px 0 rgba(77,28,10,0.78), 0 16px 40px rgba(0,0,0,0.72)" }}>
+      <div style={{ position: "absolute", left: 55, right: 55, top: 126, textAlign: "center" }}>
+        <div style={{ fontFamily: ROZHA, fontSize: 88, lineHeight: 1.13, color: "#FFF3CF", textShadow: "0 7px 0 rgba(77,28,10,0.78), 0 16px 40px rgba(0,0,0,0.72)" }}>
           महाभारत<br />1 पल में खत्म?
+        </div>
+        <div style={{ marginTop: 24, fontFamily: MUKTA, fontWeight: 800, fontSize: 34, letterSpacing: 1.5, color: "#F5C76E", textShadow: "0 4px 20px rgba(0,0,0,0.78)" }}>
+          भाग 1 · बर्बरीक
         </div>
       </div>
     </AbsoluteFill>
