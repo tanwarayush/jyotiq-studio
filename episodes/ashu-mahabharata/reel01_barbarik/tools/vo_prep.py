@@ -1,34 +1,101 @@
-"""भारत Ep6 VO prep (copied from Ep5): take the picked take of every script line (audio/vo/picked.json), find its speech runs, split each line into
-the phrases listed in tools/lines.py (cutting at the N-1 longest inner silences), level every take to Kaal's speech RMS, lay the
-phrases end to end with the listed gaps and silent beats, apply TEMPO, and write
-    audio/vo/vo.wav, audio/vo/clock.json, video/src/Jyotiq/bharata/ep6/timing.ts
-Replayed phrases (lines 1–2 after line 7) reuse the cold-open audio.
-Run: /Users/ayushrajput/earshot/.venv/bin/python tools/vo_prep.py"""
+"""Prepare the Barbarik reel voice clock.
+Trims takes, compresses long silence gaps while keeping dramatic pauses, lays segments end to end,
+applies the minimum tempo needed for the 70-80 s reel target, and writes vo.wav + timing.ts.
+Run: /Users/ayushrajput/earshot/.venv/bin/python tools/vo_prep.py
+"""
 import json
 import os
 import subprocess
-import sys
+import unicodedata
 import wave
 from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from lines import SEQ  # noqa: E402
-
 EP = Path(__file__).resolve().parent.parent
-TS = Path("/Users/ayushrajput/.kiro/crew/workspace/video/src/Jyotiq/bharata/ep6/timing.ts")
+TS = Path("/Users/ayushrajput/.kiro/crew/workspace/video/src/Ashuanimates/barbarik/timing.ts")
 FFMPEG = "/opt/homebrew/bin/ffmpeg"
 SR = 48000
 FPS = 30
-VO_START = 4
-END_HOLD = 110
-PAD_A, PAD_B = 0.03, 0.08
-TEMPO = float(os.environ.get("TEMPO", "1.0"))
+VO_START_FR = 4
+END_HOLD_FR = 60
+GAP_INNER = 0.14
+GAP_LINE = 0.24
+GAP_DRAMATIC = 0.42
+PAUSE_CAP = 0.45
+TARGET_VOICE_END = 73.2
+
+with open(EP / "audio/voice_manifest.json", encoding="utf-8") as f:
+    MANIFEST = json.load(f)
+SEGMENTS = MANIFEST["segments"]
+RAW_WORDS = json.loads((EP / "audio/stt/words_raw.json").read_text(encoding="utf-8"))
 
 
-def load(name):
-    raw = subprocess.run([FFMPEG, "-v", "error", "-i", str(EP / "audio/vo" / name), "-f", "f32le", "-ac", "2", "-ar", str(SR), "-"], capture_output=True, check=True).stdout
+def norm(s):
+    s = unicodedata.normalize("NFC", s)
+    return "".join(ch for ch in s if "\u0900" <= ch <= "\u097F")
+
+
+def lev(a, b):
+    d = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        nd = [i] + [0] * len(b)
+        for j, cb in enumerate(b, 1):
+            nd[j] = min(nd[j - 1] + 1, d[j] + 1, d[j - 1] + (ca != cb))
+        d = nd
+    return d[-1] / max(1, len(a), len(b))
+
+
+def caption_words(text):
+    return [w for w in text.replace('"', '').split() if norm(w)]
+
+
+def align(script, ws):
+    sw = caption_words(script)
+    nw = [norm(x[2]) for x in ws]
+    ns = [norm(x) for x in sw]
+    n, m = len(sw), len(ws)
+    inf = 999.0
+    dp = [[inf] * (m + 1) for _ in range(n + 1)]
+    par = [[None] * (m + 1) for _ in range(n + 1)]
+    dp[0][0] = 0.0
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            for k in range(1, min(4, j) + 1):
+                if dp[i - 1][j - k] >= inf:
+                    continue
+                cat = "".join(nw[j - k:j])
+                cost = lev(ns[i - 1], cat) + 0.04 * (k - 1)
+                val = dp[i - 1][j - k] + cost
+                if val < dp[i][j]:
+                    dp[i][j] = val
+                    par[i][j] = (j - k, k)
+    if not n or dp[n][m] >= inf:
+        return []
+    out = []
+    i, j = n, m
+    while i:
+        p = par[i][j]
+        if not p:
+            return []
+        jj, k = p
+        out.append({"w": sw[i - 1], "a": ws[jj][0], "b": ws[j - 1][1]})
+        i -= 1
+        j = jj
+    out.reverse()
+    for i, w in enumerate(out):
+        chars = max(2, len(norm(w["w"])))
+        est = 0.12 + 0.052 * chars
+        width = w["b"] - w["a"]
+        if width > est * 1.45:
+            w["a"] = max((out[i - 1]["b"] if i else 0.0), w["b"] - est * 1.25)
+        if w["b"] - w["a"] < 0.1:
+            w["b"] = w["a"] + 0.1
+    return out
+
+
+def load(mp3):
+    raw = subprocess.run([FFMPEG, "-v", "error", "-i", str(mp3), "-f", "f32le", "-ac", "2", "-ar", str(SR), "-"], capture_output=True, check=True).stdout
     return np.frombuffer(raw, np.float32).reshape(-1, 2).copy()
 
 
@@ -40,8 +107,7 @@ def env_db(x, hop=0.01):
     return 20 * np.log10(r / (np.max(r) + 1e-12)), h
 
 
-def runs(x, thr=-36.0, min_sil=0.09):
-    """Speech runs [(a, b)] in seconds: regions above thr, joined across silences shorter than min_sil."""
+def speech_runs(x, thr=-34.0, min_sil=0.06):
     db, h = env_db(x)
     loud = db > thr
     out, i, n = [], 0, len(loud)
@@ -60,181 +126,156 @@ def runs(x, thr=-36.0, min_sil=0.09):
             merged[-1][1] = b
         else:
             merged.append([a, b])
-    return [r for r in merged if r[1] - r[0] > 0.06]
+    return [r for r in merged if r[1] - r[0] > 0.04]
 
 
-def split(x, n):
-    """Split a take into n phrases at its n-1 longest inner silences; returns [(a, b)] in seconds."""
-    rs = runs(x)
-    if not rs:
-        raise SystemExit("no speech found")
-    if n == 1:
-        return [(rs[0][0], rs[-1][1])]
-    gaps = sorted(range(len(rs) - 1), key=lambda i: rs[i + 1][0] - rs[i][1], reverse=True)[: n - 1]
-    if len(gaps) < n - 1:
-        raise SystemExit(f"take has only {len(rs)} speech runs, need {n}")
-    cuts = sorted(gaps)
-    out, s = [], 0
-    for c in cuts:
-        out.append((rs[s][0], rs[c][1]))
-        s = c + 1
-    out.append((rs[s][0], rs[-1][1]))
-    return out
-
-
-def _clean(s):
-    return "".join(ch for ch in s if "\u0900" <= ch <= "\u097F" and ch not in "।॥")
-
-
-def split_words(x, ws, texts):
-    """Cut a take into its phrases at Whisper word boundaries: the boundary is where the heard letters reach the same share of
-    the line as the script's letters before that phrase; the cut snaps to the quietest 20 ms point within -0.30..+0.15 s.
-    Each piece is then trimmed to its own speech."""
-    db, h = env_db(x)
-    lens = [len(_clean(tx)) for tx in texts]
-    heard = [len(_clean(w[2])) or 1 for w in ws]
-    tot_h = sum(heard)
-    cuts = []
-    for k in range(1, len(texts)):
-        share = sum(lens[:k]) / sum(lens)
-        acc, j = 0, 0
-        while j < len(ws) and (acc + heard[j] / 2) / tot_h <= share:
-            acc += heard[j]
-            j += 1
-        t0 = ws[min(j, len(ws) - 1)][0]
-        rs = runs(x)
-        gaps = [((rs[i][1] + rs[i + 1][0]) / 2, rs[i + 1][0] - rs[i][1]) for i in range(len(rs) - 1)]
-        gaps = [g for g in gaps if g[1] >= 0.07 and all(abs(g[0] - c) > 0.2 for c in cuts)]
-        near = min(gaps, key=lambda g: abs(g[0] - t0), default=None)
-        if near and abs(near[0] - t0) < 1.1:
-            cuts.append(near[0])
-            continue
-        i0, i1 = max(0, int((t0 - 0.30) * SR / h)), min(len(db) - 2, int((t0 + 0.15) * SR / h))
-        sm = [(db[i] + db[i + 1]) / 2 for i in range(i0, i1)]
-        cuts.append((i0 + int(np.argmin(sm)) + 1) * h / SR)
-    edges = [0.0] + cuts + [len(x) / SR]
-    out = []
-    for a, b in zip(edges[:-1], edges[1:]):
-        rs = [r for r in runs(x[int(a * SR): int(b * SR)])]
-        out.append((a + rs[0][0], a + rs[-1][1]) if rs else (a, b))
-    return out
-
-
-def act_rms(z):
-    m = np.abs(z).mean(axis=1)
-    return float(np.sqrt(np.mean(m[m > 0.02] ** 2)))
+def write_wav(path, y):
+    y16 = (np.clip(y, -1, 1) * 32767).astype("<i2")
+    with wave.open(str(path), "wb") as wf:
+        wf.setnchannels(2)
+        wf.setsampwidth(2)
+        wf.setframerate(SR)
+        wf.writeframes(y16.tobytes())
 
 
 def main():
-    picked = json.loads((EP / "audio/vo/picked.json").read_text())
-    # phrases per line (first occurrence only; replays reuse)
-    per_line, order = {}, []
-    for e in SEQ:
-        if e[0] == "beat":
-            continue
-        who, l, text, _ = e
-        key = f"{who}_{l}"
-        per_line.setdefault(key, [])
-        if text not in per_line[key]:
-            per_line[key].append(text)
-    src, segs = {}, {}
-    for key, texts in per_line.items():
-        x = load(picked[key]["file"])
-        src[key] = x
-        wj = json.loads((EP / "audio/vo/words.json").read_text()) if (EP / "audio/vo/words.json").exists() else {}
-        sp = split_words(x, wj[key], texts) if (len(texts) > 1 and key in wj) else split(x, len(texts))
-        segs[key] = dict(zip(texts, sp))
-        print(key, " | ".join(f"{tx[:14]} {a:.2f}-{b:.2f}" for tx, (a, b) in zip(texts, sp)))
-    ref = act_rms(src["kaal_5"])
-    for key in src:
-        if not key.startswith("kaal"):
-            src[key] = src[key] * (ref / act_rms(src[key]))
-    fade = int(0.008 * SR)
-    pieces, phrases, beats, t = [], [], [], 0.0
-    for e in SEQ:
-        if e[0] == "beat":
-            beats.append({"name": e[2], "a": t, "b": t + e[1]})
-            pieces.append(np.zeros((int(e[1] * SR), 2), np.float32))
-            t += e[1]
-            continue
-        who, li, text, gap = e
-        key = f"{who}_{li}"
-        a, b = segs[key][text]
-        x = src[key]
-        ca = max(0.0, a - PAD_A)
-        cb = min(len(x) / SR, b + PAD_B)
-        clip = x[int(ca * SR): int(cb * SR)].copy()
-        clip[:fade] *= np.linspace(0, 1, fade)[:, None]
-        clip[-fade:] *= np.linspace(1, 0, fade)[:, None]
-        start = t + (a - ca)
+    pieces = []
+    phrase_rows = []
+    word_rows = []
+    t = 0.0
+    fade_n = int(0.006 * SR)
+    total_cuts = 0.0
+    for si, seg in enumerate(SEGMENTS):
+        code = seg["code"]
+        who = seg["who"]
+        line = seg["line"]
+        text = seg["spoken"]
+        x = load(EP / seg["file"])
+        rs = speech_runs(x)
+        if not rs:
+            raise SystemExit(f"no speech in {code}")
+        trim_a = max(0.0, rs[0][0] - 0.04)
+        trim_b = min(len(x) / SR, rs[-1][1] + 0.08)
+        removals = []
+        for r0, r1 in zip(rs, rs[1:]):
+            gap = r1[0] - r0[1]
+            if gap > PAUSE_CAP:
+                keep_head = min(0.27, gap * 0.58)
+                keep_tail = PAUSE_CAP - keep_head
+                cut_a = r0[1] + keep_head
+                cut_b = r1[0] - keep_tail
+                if cut_b > cut_a:
+                    removals.append((cut_a, cut_b))
+        def mapped(tm):
+            cut = 0.0
+            for a, b in removals:
+                if tm >= b:
+                    cut += b - a
+                elif tm > a:
+                    cut += tm - a
+            return tm - cut - trim_a
+        keep = []
+        pos = trim_a
+        for a, b in removals:
+            if a > pos:
+                keep.append((pos, a))
+            pos = max(pos, b)
+        if trim_b > pos:
+            keep.append((pos, trim_b))
+        clip_parts = []
+        for a, b in keep:
+            part = x[int(a * SR):int(b * SR)].copy()
+            if len(part) > fade_n * 2:
+                part[:fade_n] *= np.linspace(0, 1, fade_n)[:, None]
+                part[-fade_n:] *= np.linspace(1, 0, fade_n)[:, None]
+            clip_parts.append(part)
+        clip = np.concatenate(clip_parts) if clip_parts else np.zeros((1, 2), np.float32)
+        start = t + max(0.0, mapped(rs[0][0]))
         pieces.append(clip)
-        t += len(clip) / SR
-        phrases.append({"a": start, "b": start + (b - a), "l": li, "who": who, "text": text})
-        sil = max(0.0, gap - PAD_A - PAD_B)
-        if sil:
-            pieces.append(np.zeros((int(sil * SR), 2), np.float32))
-            t += sil
+        dur = len(clip) / SR
+        t += dur
+        phrase_rows.append({"a": start, "b": start + mapped(rs[-1][1]), "l": line, "who": who, "text": text, "code": code})
+        for w in align(text, RAW_WORDS.get(code, [])):
+            aa, bb = mapped(w["a"]), mapped(w["b"])
+            if bb > aa:
+                word_rows.append({"w": w["w"], "a": start + aa - mapped(rs[0][0]), "b": start + bb - mapped(rs[0][0]), "l": line, "p": len(phrase_rows) - 1, "who": who})
+        total_cuts += sum(b - a for a, b in removals)
+        prev_same_line = si + 1 < len(SEGMENTS) and SEGMENTS[si + 1]["line"] == line
+        if code in ("07b", "10a"):
+            gap = GAP_DRAMATIC
+        elif prev_same_line:
+            gap = GAP_INNER
+        else:
+            gap = GAP_LINE
+        pieces.append(np.zeros((int(gap * SR), 2), np.float32))
+        t += gap
     y = np.concatenate(pieces)
-    if abs(TEMPO - 1) > 1e-3:
-        y = subprocess.run([FFMPEG, "-v", "error", "-f", "f32le", "-ac", "2", "-ar", str(SR), "-i", "-", "-af", f"atempo={TEMPO}", "-f", "f32le", "-"],
-                           input=y.astype(np.float32).tobytes(), capture_output=True, check=True).stdout
-        y = np.frombuffer(y, np.float32).reshape(-1, 2).copy()
-        for r in phrases + beats:
-            r["a"] /= TEMPO
-            r["b"] /= TEMPO
-    y = y / max(1e-6, float(np.max(np.abs(y)))) * 0.708
-
-    words = []
-    for pi, ph in enumerate(phrases):
-        ws = ph["text"].split()
-        ln = [max(1, len(w.strip("…,।?!"))) for w in ws]
-        u = ph["a"]
-        for w, n in zip(ws, ln):
-            d = (ph["b"] - ph["a"]) * n / sum(ln)
-            words.append({"w": w, "a": u, "b": u + d, "l": ph["l"], "p": pi})
-            u += d
-
-    out_dir = EP / "audio/vo"
-    with wave.open(str(out_dir / "vo.wav"), "wb") as wf:
-        wf.setnchannels(2)
-        wf.setsampwidth(3)
-        wf.setframerate(SR)
-        ints = (np.clip(y, -1, 1) * 8388607).astype("<i4").tobytes()
-        wf.writeframes(b"".join(ints[i:i + 3] for i in range(0, len(ints), 4)))
-
-    off = VO_START / FPS - phrases[0]["a"]
+    base = len(y) / SR
+    tempo = 1.0
+    if base > TARGET_VOICE_END:
+        tempo = min(1.13, base / TARGET_VOICE_END)
+    if abs(tempo - 1) > 0.005:
+        out = subprocess.run(
+            [FFMPEG, "-v", "error", "-f", "f32le", "-ac", "2", "-ar", str(SR), "-i", "-", "-af", f"atempo={tempo:.5f}", "-f", "f32le", "-"],
+            input=y.astype(np.float32).tobytes(), capture_output=True, check=True,
+        ).stdout
+        y = np.frombuffer(out, np.float32).reshape(-1, 2).copy()
+        for row in phrase_rows + word_rows:
+            row["a"] /= tempo
+            row["b"] /= tempo
+    peak = float(np.max(np.abs(y))) or 1.0
+    y = y / peak * 0.72
+    write_wav(EP / "audio/vo/vo.wav", y)
+    voice_end = len(y) / SR
+    off = VO_START_FR / FPS - min(p["a"] for p in phrase_rows)
     fr = lambda s: int(round((s + off) * FPS))  # noqa: E731
-    total = fr(phrases[-1]["b"]) + END_HOLD
-    m = np.abs(y).mean(axis=1)
+    total = fr(max(p["b"] for p in phrase_rows)) + END_HOLD_FR
+    lines = []
+    for line in range(1, 15):
+        rows = [p for p in phrase_rows if p["l"] == line]
+        lines.append({"l": line, "a": fr(min(p["a"] for p in rows)), "b": fr(max(p["b"] for p in rows))})
+    mono = np.abs(y).mean(axis=1)
     hop = SR // FPS
-    nfr = len(m) // hop
-    env = np.sqrt(np.mean(m[: nfr * hop].reshape(nfr, hop) ** 2, axis=1))
+    nfr = len(mono) // hop
+    env = np.sqrt(np.mean(mono[: nfr * hop].reshape(nfr, hop) ** 2, axis=1))
     env = np.clip(env / (np.percentile(env[env > 0.01], 95) + 1e-9), 0, 1)
     lead = int(round(off * FPS))
     reel_env = np.zeros(total)
-    for i in range(nfr):
+    for i, v in enumerate(env):
         j = i + lead
         if 0 <= j < total:
-            reel_env[j] = env[i]
-    clock = {"vo_offset_s": round(off, 3), "total": total, "tempo": TEMPO,
-             "phrases": [{**p, "fa": fr(p["a"]), "fb": fr(p["b"])} for p in phrases],
-             "beats": [{**b, "fa": fr(b["a"]), "fb": fr(b["b"])} for b in beats],
-             "words": [{**w, "fa": fr(w["a"]), "fb": fr(w["b"])} for w in words]}
-    (out_dir / "clock.json").write_text(json.dumps(clock, ensure_ascii=False, indent=1))
-    ts = ["// Generated by mahabharat-ep6/tools/vo_prep.py. Do not edit by hand.", f"export const FPS = {FPS};", f"export const VO_OFFSET = {round(off * FPS, 3)};", f"export const TOTAL = {total};",
-          "export type Word = { w: string; a: number; b: number; l: number; p: number };", "export const WORDS: Word[] = ["]
-    ts += [f'  {{ w: {json.dumps(w["w"], ensure_ascii=False)}, a: {fr(w["a"])}, b: {fr(w["b"])}, l: {w["l"]}, p: {w["p"]} }},' for w in words]
-    ts += ["];", "export const PHRASES: { a: number; b: number; l: number; who: string }[] = ["]
-    ts += [f"  {{ a: {fr(p['a'])}, b: {fr(p['b'])}, l: {p['l']}, who: \"{p['who']}\" }}, // {p['text']}" for p in phrases]
-    ts += ["];", "export const BEATS: Record<string, [number, number]> = {"] + [f"  {b['name']}: [{fr(b['a'])}, {fr(b['b'])}]," for b in beats] + ["};"]
-    ts += ["/** Mouth envelope per reel frame (0..1), from vo.wav. */", "export const ENV: number[] = [" + ",".join(f"{v:.2f}".rstrip("0").rstrip(".") if v else "0" for v in reel_env) + "];"]
-    TS.write_text("\n".join(ts) + "\n")
-    print(f"vo {len(y) / SR:.2f}s offset {off:.3f}s tempo {TEMPO}")
-    for i, p in enumerate(phrases):
-        print(f"P{i:2d} L{p['l']:2d} {fr(p['a']):5d}-{fr(p['b']):5d} {p['who']:9s} {p['text']}")
-    for b in beats:
-        print("beat", b["name"], fr(b["a"]), fr(b["b"]))
-    print("TOTAL", total, f"({total / FPS:.2f} s)")
+            reel_env[j] = float(v)
+    for row in word_rows:
+        row["fa"] = fr(row["a"])
+        row["fb"] = fr(row["b"])
+    clock = {
+        "tempo": tempo,
+        "base_voice_seconds_before_tempo": base,
+        "voice_seconds": voice_end,
+        "total_frames": total,
+        "removed_pause_seconds": total_cuts,
+        "phrases": phrase_rows,
+        "words": word_rows,
+    }
+    (EP / "audio/vo/clock.json").write_text(json.dumps(clock, ensure_ascii=False, indent=1), encoding="utf-8")
+    TS.parent.mkdir(parents=True, exist_ok=True)
+    ts = [
+        "// Generated by ashuanimates-barbarik/tools/vo_prep.py. Do not edit by hand.",
+        f"export const FPS = {FPS};",
+        f"export const TOTAL = {total};",
+        "export type Word = { w: string; a: number; b: number; l: number; p: number; who: string };",
+        "export const WORDS: Word[] = [",
+    ]
+    ts += [f"  {{ w: {json.dumps(w['w'], ensure_ascii=False)}, a: {w['fa']}, b: {w['fb']}, l: {w['l']}, p: {w['p']}, who: {json.dumps(w['who'])} }}," for w in word_rows]
+    ts += ["];", "export const PHRASES: { a: number; b: number; l: number; who: string; text: string; code: string }[] = ["]
+    ts += [f"  {{ a: {fr(p['a'])}, b: {fr(p['b'])}, l: {p['l']}, who: {json.dumps(p['who'])}, text: {json.dumps(p['text'], ensure_ascii=False)}, code: {json.dumps(p['code'])} }}," for p in phrase_rows]
+    ts += ["];", "export const LINES: { l: number; a: number; b: number }[] = ["]
+    ts += [f"  {{ l: {r['l']}, a: {r['a']}, b: {r['b']} }}," for r in lines]
+    ts += ["];", "export const ENV: number[] = [" + ",".join(f"{v:.2f}".rstrip("0").rstrip(".") if v else "0" for v in reel_env) + "];"]
+    TS.write_text("\n".join(ts) + "\n", encoding="utf-8")
+    print(f"base {base:.2f}s voice {voice_end:.2f}s tempo {tempo:.3f} removed_pauses {total_cuts:.2f}s total {total}fr/{total/FPS:.2f}s")
+    for p in phrase_rows:
+        print(f"{p['code']} L{p['l']:02d} {fr(p['a']):4d}-{fr(p['b']):4d} {p['who']} {p['text']}")
 
 
 if __name__ == "__main__":

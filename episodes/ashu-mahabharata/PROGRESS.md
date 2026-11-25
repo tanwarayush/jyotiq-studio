@@ -62,3 +62,11 @@ Branch: `ashuanimates/mahabharata-10`. Series overrides from the brief apply: no
 - Missing `video/public/jyotiq/testimonial/captions.json` was copied from the existing Mac studio because Root.tsx otherwise cannot bundle. It is a 3.9 KB metadata file, not media.
 - Typecheck command used: `cd video && npx tsc --noEmit --pretty false | grep -E 'Ashu/mahabharata|Ashuanimates'`; no series errors so far. Full `npm run lint` still fails on pre-existing unrelated old episodes (Board6 unused Sword, ep7 unused f, manthan ep6 unused imports, missing testimonial JSON before copy etc.). Do not edit those old episodes.
 - Draft render was only a baseline. Final canonical render must be made from THIS clone after the bust/caption/end-card upgrades.
+- Render lesson: Remotion did not follow a `public/ashuanimates/barbarik/mix.wav` symlink during bundling (404 inside the webpack temp bundle). The ignored media file must be physically copied into `video/public/...` before rendering. This copy is local-only and must not be committed.
+
+## Reel 2 pre-production checkpoint — 2026-11-26 04:48 IST
+- `reel02_karna/` created from the reel-1 pipeline. SCRIPT.md contains the exact approved Hindi lines and an outside-viewer wording check (no changes).
+- Voices chosen: narrator Kaal `sOZQ1ppVsWN9p0pWlPgY`; Surya Neel `PnaKthDVqB7PvUN6iU48`; Karna Pavan M `HvtjkB4qXezhvD9lP84O`; Indra custom `HKtEa3piD69tFsCIdVpq`.
+- ElevenLabs subscription check before Karna batch: used 26,272 / 144,456, remaining 118,184 characters. Karna batch estimate: 763 spoken chars, 1,124 tagged input chars, 15 one-take segments.
+- Karna VO generation started locally in background; audio is ignored by git. Next steps after generation: `tools/transcribe.py`, adapt `tools/vo_prep.py` for 12 lines and repo timing path, synthesise/mix with `tools/score_mix.py` adapted to Karna, then build `video/src/Ashuanimates/karna/`.
+- Reel 1 final render `barbarik_reel_v2.mp4` is running from the upgraded clone. Draft v1 is not final. After completion: inspect first/cover/12 spread/key frames, measure loudness/true peak/duration, transcribe final MP4 if possible, write REPORT/PROGRESS, release assets with gh release, commit+push.
