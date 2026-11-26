@@ -1,10 +1,11 @@
 import React from "react";
 import { AbsoluteFill, Audio, staticFile, useCurrentFrame } from "remotion";
-import { Defs, H, PaperGrain, ROZHA, Vignette, W, outCubic, prog } from "../../Ashu/mahabharata/kit/kit";
+import { Defs, H, MUKTA, PaperGrain, ROZHA, Vignette, W, outCubic, prog } from "../../Ashu/mahabharata/kit/kit";
 import { CaptionTrack, HookTitle, SeriesEndCard } from "../../Ashu/mahabharata/kit/captions";
 import { LINES, PHRASES, TOTAL, WORDS } from "./timing";
 import { ArmourGift, ArmourShatter, BabyRiver, DaanveerTitle, DawnOffering, DeathAsk, DreamWarning, HookSun, IndraWatch, NoArmour, ShaktiGrant, SmileMoon } from "./scenes";
-import { KarnaFigure, KavachPiece } from "../../Ashu/mahabharata/kit/cast";
+import { KavachPiece } from "../../Ashu/mahabharata/kit/cast";
+import { Bust, LOOKS } from "../../Ashu/mahabharata/kit/bust";
 import { SolarBattlefield } from "../../Ashu/mahabharata/kit/world";
 
 type Shot = { a: number; b: number; render: (f: number, a: number, b: number) => React.ReactNode };
@@ -72,15 +73,18 @@ export const KarnaCover: React.FC = () => {
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", inset: 0 }}>
         <Defs />
         <SolarBattlefield f={f} empty={1} />
-        <circle cx={560} cy={880} r={470} fill="#FFE7A0" opacity={0.14} filter="url(#bbBlur18)" />
-        <KarnaFigure f={f} x={540} y={1530} s={1.6} noArmour glow={1.4} seed={8} />
-        <KavachPiece x={770} y={720} s={0.72} rot={16} glow={1.2} />
+        <circle cx={560} cy={940} r={500} fill="#FFE7A0" opacity={0.16} filter="url(#bbBlur18)" />
+        <KavachPiece x={800} y={610} s={0.58} rot={16} glow={1.2} />
+        <Bust look={LOOKS.karna} f={f} x={-34} y={20} s={1.04} e={{ eye: 1, smile: 0.2, brow: 0.18 }} />
         <PaperGrain o={0.17} />
         <Vignette o={0.55} />
       </svg>
-      <div style={{ position: "absolute", left: 55, right: 55, top: 150, textAlign: "center" }}>
-        <div style={{ fontFamily: ROZHA, fontSize: 82, lineHeight: 1.16, color: "#FFF3CF", textShadow: "0 7px 0 rgba(77,28,10,0.78), 0 16px 40px rgba(0,0,0,0.72)" }}>
+      <div style={{ position: "absolute", left: 55, right: 55, top: 126, textAlign: "center" }}>
+        <div style={{ fontFamily: ROZHA, fontSize: 78, lineHeight: 1.16, color: "#FFF3CF", textShadow: "0 7px 0 rgba(77,28,10,0.78), 0 16px 40px rgba(0,0,0,0.72)" }}>
           जिसे कोई<br />नहीं मार सकता था
+        </div>
+        <div style={{ marginTop: 24, fontFamily: MUKTA, fontWeight: 800, fontSize: 34, letterSpacing: 1.5, color: "#F5C76E", textShadow: "0 4px 20px rgba(0,0,0,0.78)" }}>
+          भाग 2 · कर्ण
         </div>
       </div>
     </AbsoluteFill>
